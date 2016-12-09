@@ -1,25 +1,7 @@
-<h1>
-  {{title}}
-</h1>
-
-<div class="ui input">
-  <input type="text" name="userName" #userName>
-  <input type="password" name="userPass" #userPass>
+<div class="ui container">
+  <div class="row">
+    <p>Here is a Nav Bar</p>
+  </div>
 </div>
 
-<button class="ui button green" (click)="getAuthorized(userName.value, userPass.value)">
-  Get Autorized
-</button>
-
-<button class="ui button red" (click)="showCam()">
-  Show the cam!
-</button>
-
-<div class="cam-shower">
-
-</div>
-
-
-
-
-<!--<img src= "http://192.168.56.102:5000/api/http" style="width: 25vw;" />-->
+<router-outlet></router-outlet>
