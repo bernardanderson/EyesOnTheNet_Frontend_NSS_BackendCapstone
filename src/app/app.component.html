@@ -2,10 +2,24 @@
   {{title}}
 </h1>
 
-<button class="ui button">
-  Follow
+<div class="ui input">
+  <input type="text" name="userName" #userName>
+  <input type="password" name="userPass" #userPass>
+</div>
+
+<button class="ui button green" (click)="getAuthorized(userName.value, userPass.value)">
+  Get Autorized
 </button>
 
-<!--<img src= "http://192.168.0.229:5000/api/http" />-->
+<button class="ui button red" (click)="showCam()">
+  Show the cam!
+</button>
 
-<img src= "http://192.168.56.102:5000/api/http" style="width: 25vw;" />
+<div class="cam-shower">
+
+</div>
+
+
+
+
+<!--<img src= "http://192.168.56.102:5000/api/http" style="width: 25vw;" />-->
