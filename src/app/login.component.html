@@ -1,0 +1,46 @@
+<div class="ui container">
+  <div class="ui two column divided grid">
+    <div class="column">
+      <p>Eyes On The Net Image Goes Here</p>
+    </div>
+    <div class="column">
+      <div class="row">
+        <div class="ui left icon input">
+          <i class="users icon"></i>
+          <input type="text" placeholder="User Name..." #userName>
+        </div>        
+      </div>
+
+      <div class="row">
+        <div class="ui left icon input">
+          <i class="unlock icon"></i>
+          <input type="password" placeholder="Password..." #userPass>
+        </div>        
+      </div>
+      <div class="row">
+        <button class="ui button olive" (click)="getAuthorized(userName.value, userPass.value)">
+        <i class="sign in icon"></i>
+          Login
+        </button>
+      </div>
+      <div class="row">
+        <p>{{loginErrorMsg}}</p>
+    </div>
+  </div>
+</div>
+<!--
+<button class="ui button red" (click)="showCam()">
+  Show the cam!
+</button>
+
+<a routerLink="/register" ><button class="ui button orange">
+  Show register!
+</button></a>
+
+
+<a routerLink="/cameras" ><button class="ui button orange">
+  Show CameraView!
+</button></a>
+
+<div class="cam-shower"></div>
+-->
