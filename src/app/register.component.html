@@ -1,1 +1,35 @@
-<h1>This is the register view</h1>
+<div class="ui container">
+  <div class="ui two column divided grid">
+    <div class="column">
+      <div class="row">
+        <div class="ui left icon input">
+          <i class="users icon"></i>
+          <input type="text" placeholder="User Name..." #userName>
+        </div>        
+      </div>
+      <div class="row">
+        <div class="ui left icon input">
+          <i class="unlock icon"></i>
+          <input type="password" placeholder="Password..." #userPass>
+        </div>        
+      </div>
+      <div class="row">
+        <div class="ui left icon input">
+          <i class="at icon"></i>
+          <input type="password" placeholder="Password..." #userEmail>
+        </div>        
+      </div>
+      <div class="row">
+        <button class="ui button olive" (click)="getRegistered(userName.value, userPass.value, userEmail.value)">
+        <i class="sign in icon"></i>
+          Get Registered!
+        </button>
+      </div>
+      <div class="row">
+        <p>{{registerErrorMsg}}</p>
+    </div>
+  </div>
+  <div class="column">
+    <p>Random Public Cam Goes Here</p>
+  </div>
+</div>
