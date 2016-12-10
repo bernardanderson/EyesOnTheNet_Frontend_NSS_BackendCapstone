@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { Http, Headers, Response} from '@angular/http';
 import { Router } from '@angular/router';
 import 'rxjs/add/operator/map';
+//
+import { GlobalVariables } from './global';
 
 declare var $: any;
 
@@ -15,7 +17,6 @@ export class LoginComponent {
 
   router: Router;
 
-  serverIP: string = "192.168.0.229";
   loginError = {
     currentCount: 0,
     maxCount: 3
@@ -47,7 +48,7 @@ export class LoginComponent {
     var headers = new Headers();
     headers.append('Content-Type', 'application/x-www-form-urlencoded');
 
-    this.http.post(`http://${this.serverIP}:5000/token`, creds, {
+    this.http.post(`http://${GlobalVariables.serverIP}/token`, creds, {
       headers: headers,
       }).map( res => this.extractData(res) )
       .subscribe(
@@ -69,7 +70,7 @@ export class LoginComponent {
   }
 
   showCam() {
-    $('.cam-shower').html(`<img src='http://${this.serverIP}:5000/api/http' />`);
+    $('.cam-shower').html(`<img src='http://${GlobalVariables.serverIP}:5000/api/http' />`);
   }
 
   // Neat code to check to see if a post's response is text to then convert to Json. If not, it leaves it alone. 
@@ -88,9 +89,4 @@ export class LoginComponent {
     document.cookie = `Name=${sentData.name}; expires=${cookieExpires}"`;
     document.cookie = `access_token=${sentData.access_token}; expires=${cookieExpires}"`;
   }
-
-
-
-
-
 }
