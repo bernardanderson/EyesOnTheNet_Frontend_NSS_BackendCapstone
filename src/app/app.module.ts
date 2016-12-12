@@ -22,9 +22,9 @@ import { CameraDisplayComponent }  from './cameraDisplay.component';
     FormsModule,
     HttpModule,
     RouterModule.forRoot([
-      { path: '', component: LoginComponent },
+      { path: '', pathMatch: 'full', component: LoginComponent },
       { path: 'register', component: RegisterComponent },
-      { path: 'cameras', component: CameraDisplayComponent },
+      { path: 'cameras', component: CameraDisplayComponent }
     ])
   ],
   providers: [],

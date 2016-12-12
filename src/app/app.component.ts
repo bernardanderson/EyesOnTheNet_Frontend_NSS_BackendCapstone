@@ -14,14 +14,13 @@ declare var $: any;
 export class AppComponent {
 
   menuItem: string = "";
+  menuActive: boolean = false;
 
   constructor(private menuService: MenuService) {
-    /*
-    menuService.selectedMenuItem$.subscribe(
+    menuService.showMenu$.subscribe(
       selectedMenu => {
-        this.menuItem = selectedMenu;
+        this.menuActive = selectedMenu;
       });
-    */
   }
 
   userMenuSelection(sentEvent): void {

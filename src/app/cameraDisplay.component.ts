@@ -21,31 +21,44 @@ export class CameraDisplayComponent implements OnDestroy {
     // Inputted from menu communictation in App.Component
     @Input() selectedMenu:string;                           
     
+    ngOnInit() {
+        this.menuService.activateMenu(true);
+        //this.getCameraList();
+    }
+
+    // Prevents memory leakage when this view is destroyed
+    ngOnDestroy() {
+        this.subscription.unsubscribe();
+    }
+
+    // Needed for menu communication
+    subscription:Subscription;                              
+    
     userCameraList: {
         id: string,
         name: string,
         location: string
     }[];
 
-    // Needed for menu communication
-    subscription:Subscription;                              
-
     // The formatted constructor receives the menu information when changed in parent
     constructor(private menuService: MenuService) {          
         this.subscription = menuService.selectedMenuItem$.subscribe(
         menuItem => {
-            console.log("The new item is: ", menuItem); // Put code here to run functions or access the menuItems
+                         // Put code here to run functions or access the menuItems
         });
     }
 
-/*
-    ngOnInit() {
-        this.getCameraList();
-    }
-*/
 
-// Prevents memory leakage when this view is destroyed
-    ngOnDestroy() {
-        this.subscription.unsubscribe();
-    }
+
+
+
+
+
+
+
+
+
+
+
+
 }

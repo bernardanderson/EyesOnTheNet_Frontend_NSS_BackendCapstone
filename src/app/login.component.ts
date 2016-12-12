@@ -16,7 +16,7 @@ declare var $: any;
 export class LoginComponent {
 
   router: Router;
-
+  
   loginError = {
     currentCount: 0,
     maxCount: 3
@@ -31,7 +31,7 @@ export class LoginComponent {
   ngOnInit() {
     if (document.cookie.indexOf("access_token") !== -1) {
       console.log("Token Present!");
-      this.router.navigateByUrl('/cameras');
+      this.router.navigateByUrl("cameras");
     } else {
       console.log("Token Not Found!");
     }
