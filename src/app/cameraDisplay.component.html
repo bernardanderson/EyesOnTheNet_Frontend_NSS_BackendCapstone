@@ -3,7 +3,7 @@
     <div class="ui vertical menu">
       <div class="item">
         <div class="ui icon input">
-          <input type="text" placeholder="Search...">
+          <input type="text" placeholder="Search..." #cameraTerm (keyup)="cameraTerm">
           <i class="search icon"></i>
         </div>
       </div>
@@ -13,7 +13,7 @@
           Refresh: {{refreshTimerOptions[0].message}}</div>
       </div>
 
-      <a class="item" *ngFor="let camera of userCameraList" (click)="addCamerasToView(camera)">
+      <a class="item" *ngFor="let camera of (userCameraList | cameraSearchPipe:cameraTerm.value)" (click)="addCamerasToView(camera)">
         <h4 class="ui header">{{camera.name}}</h4>
         <p>{{camera.location}}</p>
       </a>
