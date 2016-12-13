@@ -1,1 +1,21 @@
-<h1>This is the CameraDisplay Component</h1>
+<div class="ui grid">
+  <div class="three wide column">
+    <div class="ui vertical menu">
+      <a class="item" *ngFor="let camera of userCameraList" (click)="addCamerasToView(camera)">
+        <h4 class="ui header">{{camera.name}}</h4>
+        <p>{{camera.location}}</p>
+      </a>
+    </div>
+  </div>
+  <div class="twelve wide column">
+    <div class="ui two column grid">
+      <div class="column" *ngFor="let camera of viewingCameras">
+        <div class="ui segment">
+          <h3 class="ui header centered">{{camera.name}}</h3>
+          <img class="ui rounded image centered" [src]="camera.cameraURL"/>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<p>{{timeKeeper}}</p>
