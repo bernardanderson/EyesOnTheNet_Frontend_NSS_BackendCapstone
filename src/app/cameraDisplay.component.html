@@ -1,6 +1,18 @@
 <div class="ui grid">
   <div class="three wide column">
     <div class="ui vertical menu">
+      <div class="item">
+        <div class="ui icon input">
+          <input type="text" placeholder="Search...">
+          <i class="search icon"></i>
+        </div>
+      </div>
+      <div class="item">
+        <div class="ui button fluid" (click)="refreshTimer()">
+          <i class="wait icon"></i>
+          Refresh: {{refreshTimerOptions[0].message}}</div>
+      </div>
+
       <a class="item" *ngFor="let camera of userCameraList" (click)="addCamerasToView(camera)">
         <h4 class="ui header">{{camera.name}}</h4>
         <p>{{camera.location}}</p>
@@ -18,4 +30,3 @@
     </div>
   </div>
 </div>
-<p>{{timeKeeper}}</p>
