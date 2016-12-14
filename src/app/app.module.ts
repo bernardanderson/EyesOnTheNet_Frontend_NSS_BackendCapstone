@@ -8,14 +8,15 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login.component';
 import { RegisterComponent }  from './register.component';
 import { CameraDisplayComponent }  from './cameraDisplay.component';
-
+import { CameraSearchPipe } from './camerasearch.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     RegisterComponent,
-    CameraDisplayComponent
+    CameraDisplayComponent,
+    CameraSearchPipe
   ],
   imports: [
     BrowserModule,

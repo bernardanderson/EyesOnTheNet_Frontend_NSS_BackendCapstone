@@ -39,7 +39,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
           {message: "30s", time:30000},
           {message: "60s", time:60000}];
     viewingCameras: {                // Array of which cameras are currently being viewed
-        cameraHashId: number,
+        cameraIdHash: number,
         cameraURL: string,
         name: string,
         location: string
@@ -91,9 +91,9 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     //  If it's already being viewed, the IMG src string gets updated instead.
     addCamerasToView(sentCamera): boolean {
         sentCamera.cameraURL =`http://${GlobalVariables.serverIP}/api/camera/${sentCamera.cameraIdHash}/snapshot?${new Date().getTime()}`;
-        
+
         for (let i = 0; i < this.viewingCameras.length; i++) {
-            if (sentCamera.name === this.viewingCameras[i].name) {
+            if (sentCamera.cameraIdHash === this.viewingCameras[i].cameraIdHash) {
                 this.viewingCameras[i] = sentCamera
                 return true;       
             }
@@ -128,5 +128,26 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         }
     }
 
+    camPicMenu(sentEvent, sentCamera) {
 
+        console.log(sentEvent);
+
+        let camMenuAction: string = "";
+        if (sentEvent.target.className.includes("icon")) {
+            camMenuAction = sentEvent.target.parentElement.innerText;
+        } else {
+            camMenuAction = sentEvent.target.innerText;
+        }
+
+        switch (camMenuAction) {
+            case "Close": 
+                this.viewingCameras.splice(this.viewingCameras.indexOf(sentCamera), 1);
+                break;
+            case "Refresh": 
+                this.addCamerasToView(sentCamera);
+                break;
+            default:
+                break;
+        }
+    }
 }

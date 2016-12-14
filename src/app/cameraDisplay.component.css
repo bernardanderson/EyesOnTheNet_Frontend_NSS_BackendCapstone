@@ -1,0 +1,8 @@
+div.ui.four.item.text.menu {
+    margin: 0;
+    min-height: 2.2rem;
+}
+
+.ui.grid>.column:not(.row) {
+    padding-bottom: 0;
+}

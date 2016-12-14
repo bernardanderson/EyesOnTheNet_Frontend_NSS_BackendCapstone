@@ -3,7 +3,7 @@
     <div class="ui vertical menu">
       <div class="item">
         <div class="ui icon input">
-          <input type="text" placeholder="Search...">
+          <input type="text" placeholder="Search..." #cameraTerm (keyup)="cameraTerm">
           <i class="search icon"></i>
         </div>
       </div>
@@ -13,20 +13,40 @@
           Refresh: {{refreshTimerOptions[0].message}}</div>
       </div>
 
-      <a class="item" *ngFor="let camera of userCameraList" (click)="addCamerasToView(camera)">
+      <a class="item" *ngFor="let camera of (userCameraList | cameraSearchPipe:cameraTerm.value)" (click)="addCamerasToView(camera)">
         <h4 class="ui header">{{camera.name}}</h4>
         <p>{{camera.location}}</p>
       </a>
     </div>
   </div>
+  
   <div class="twelve wide column">
     <div class="ui two column grid">
       <div class="column" *ngFor="let camera of viewingCameras">
-        <div class="ui segment">
-          <h3 class="ui header centered">{{camera.name}}</h3>
-          <img class="ui rounded image centered" [src]="camera.cameraURL"/>
+          <div class="ui segment" (click)="camPicMenu($event, camera)">
+            <div class="ui grid">
+              <div class="column">
+                <h3 class="ui header centered">{{camera.name}}</h3>
+                <img class="ui rounded image centered" [src]="camera.cameraURL"/>
+                <div class="ui four item text menu">
+                  <a class="item">
+                    <i class="zoom icon"></i> Expand
+                  </a>
+                  <a class="item">
+                    <i class="edit icon"></i> Edit
+                  </a>
+                  <a class="item">
+                    <i class="refresh icon"></i> Refresh
+                  </a>
+                  <a class="item">
+                    <i class="remove icon"></i> Close
+                  </a>
+                </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+  
