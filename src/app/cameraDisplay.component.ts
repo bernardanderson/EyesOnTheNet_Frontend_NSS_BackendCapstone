@@ -7,7 +7,6 @@ import { Observable } from 'rxjs/Observable';
 import { IntervalObservable } from 'rxjs/observable/IntervalObservable'; // For Timer
 import 'rxjs/add/operator/map';
 //
-
 import { GlobalVariables } from './global';
 
 declare var $: any;
