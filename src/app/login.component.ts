@@ -69,10 +69,6 @@ export class LoginComponent {
       );
   }
 
-  showCam() {
-    $('.cam-shower').html(`<img src='http://${GlobalVariables.serverIP}:5000/api/http' />`);
-  }
-
   // Neat code to check to see if a post's response is text to then convert to Json. If not, it leaves it alone. 
   private extractData(res: Response) {
     let body;
@@ -86,7 +82,7 @@ export class LoginComponent {
   // This builds a cookie of the JWT parameters, and sets the user name too.
   private cookieBuilder(sentData) {
     let cookieExpires = new Date((Date.now() + (sentData.expires_in - 60) * 1000)).toUTCString();
-    document.cookie = `Name=${sentData.name}; expires=${cookieExpires}"`;
+    //document.cookie = `Name=${sentData.name}; expires=${cookieExpires}"`;
     document.cookie = `access_token=${sentData.access_token}; expires=${cookieExpires}"`;
   }
 }

@@ -13,10 +13,12 @@ declare var $: any;
 
 export class AppComponent {
 
+  router: Router;
   menuItem: string = "";
   menuActive: boolean = false;
 
-  constructor(private menuService: MenuService) {
+  constructor(private menuService: MenuService, router: Router) {
+    this.router = router;
     menuService.showMenu$.subscribe(
       selectedMenu => {
         this.menuActive = selectedMenu;
@@ -24,6 +26,7 @@ export class AppComponent {
   }
 
   userMenuSelection(sentEvent): void {
+    // When a menu item is clicked, this sends out the annoucement to all subscribers
     let message: string;
     if (sentEvent.target.tagName === "I"){
       this.menuItem = sentEvent.target.parentElement.innerText;
@@ -31,5 +34,18 @@ export class AppComponent {
       this.menuItem = sentEvent.target.innerText;
     }
     this.menuService.annouceMenuItem(this.menuItem);
+
+    // This checks to see what action should be taken
+    if (this.menuItem === "Logout") {
+      this.userLogout();
+
+    }
+
+  }
+
+  userLogout() {
+    document.cookie = "access_token=;Path=/;expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+    this.menuService.activateMenu(false);
+    this.router.navigateByUrl('');
   }
 }
