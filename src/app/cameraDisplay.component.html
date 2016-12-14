@@ -23,7 +23,7 @@
   <div class="twelve wide column">
     <div class="ui two column grid">
       <div class="column" *ngFor="let camera of viewingCameras">
-          <div class="ui segment">
+          <div class="ui segment" (click)="camPicMenu($event, camera)">
             <div class="ui grid">
               <div class="column">
                 <h3 class="ui header centered">{{camera.name}}</h3>
