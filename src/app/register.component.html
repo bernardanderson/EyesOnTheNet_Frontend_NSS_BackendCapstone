@@ -1,4 +1,46 @@
 <div class="ui container">
+  <div class="ui two column grid">
+    <div class="five wide column twentytopmargin">
+      <div class="ui form">
+
+      <div class="field">
+        <div class="ui left icon input">
+          <i class="users icon"></i>
+          <input type="text" placeholder="User Name..." #userName>
+        </div>        
+      </div>
+
+      <div class="field">
+        <div class="ui left icon input">
+          <i class="unlock icon"></i>
+          <input type="password" placeholder="Password..." #userPass>
+        </div>     
+      </div>
+
+      <div class="field">
+        <div class="ui left icon input">
+          <i class="at icon"></i>
+          <input type="email" placeholder="Email Address..." #userEmail>
+        </div>        
+      </div>
+
+      <div class="ui button olive" (click)="getRegistered(userName.value, userPass.value, userEmail.value)">
+        <i class="sign in icon"></i>
+        Get Registered!
+      </div>
+      
+      <div class="ui negative large message" *ngIf="registerError.anError">
+        <p>{{registerError.registerMsg}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="ten wide column centered tentopmargin">
+    <p>Eyes On The Net Image Goes Here</p>
+  </div>
+</div>
+
+<!--
+<div class="ui container">
   <div class="ui two column divided grid">
     <div class="column">
       <div class="row">
@@ -20,10 +62,6 @@
         </div>        
       </div>
       <div class="row">
-        <button class="ui button olive" (click)="getRegistered(userName.value, userPass.value, userEmail.value)">
-        <i class="sign in icon"></i>
-          Get Registered!
-        </button>
       </div>
       <div class="row">
         <p>{{registerErrorMsg}}</p>
@@ -33,3 +71,4 @@
     <p>Random Public Cam Goes Here</p>
   </div>
 </div>
+-->

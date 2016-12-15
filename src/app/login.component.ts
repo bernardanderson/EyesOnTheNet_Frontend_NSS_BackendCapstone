@@ -18,10 +18,10 @@ export class LoginComponent {
   router: Router;
   
   loginError = {
-    currentCount: 0,
-    maxCount: 3
+    currentCount:  0,
+    maxCount: 3,
+    loginErrorMsg: ""
   };
-  loginErrorMsg: string = "";
 
   constructor(private http: Http, router: Router) { 
     this.router = router;
@@ -43,8 +43,6 @@ export class LoginComponent {
     // Add method to check user name 
     // Add method to Check password length/strength
 
-    this.loginError.currentCount++; 
-
     var headers = new Headers();
     headers.append('Content-Type', 'application/x-www-form-urlencoded');
 
@@ -59,8 +57,9 @@ export class LoginComponent {
           this.router.navigateByUrl('/cameras');
         },
         err => {
+          this.loginError.currentCount++; 
           if (this.loginError.currentCount < this.loginError.maxCount) {
-            this.loginErrorMsg = `Login Unsuccessful: ${this.loginError.currentCount} of ${this.loginError.maxCount} attempts remain`;
+            this.loginError.loginErrorMsg = `Login failed: ${this.loginError.currentCount} of ${this.loginError.maxCount} attempts remain`;
           } else {
             this.router.navigateByUrl('/register');
           }

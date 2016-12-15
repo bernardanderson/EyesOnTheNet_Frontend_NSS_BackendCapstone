@@ -17,7 +17,10 @@ export class RegisterComponent {
 
   router: Router;
 
-  registerMsg: string = "";
+  registerError = {
+    anError: false,
+    registerMsg: ""
+  };
 
   constructor(private http: Http, router: Router) { 
     this.router = router;
@@ -32,17 +35,20 @@ export class RegisterComponent {
 
     var headers = new Headers();
     headers.append('Content-Type', 'application/json');
+    headers.append('Access-Control-Allow-Origin', '*');
 
     this.http.post(`http://${GlobalVariables.serverIP}/api/registration`, regCreds, {
       headers: headers,
       }).map( res => res.text() )
       .subscribe(
         data => {
-          this.registerMsg = data;
+          //this.registerError.registerMsg = data;
           this.router.navigateByUrl('/');
         },
         err => {
-          this.registerMsg = err._body;          
+          console.log(err);
+          this.registerError.registerMsg = err._body;
+          this.registerError.anError = true;          
         }
       );
   }
