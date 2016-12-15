@@ -40,6 +40,11 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     refreshinterval: number = 5000;        // For cam images refresh
     userCameraList: {}[] = [];             // Array of Possible User Cameras
 
+    expandedSingleCameraInfo: {}[] = [{    // For the expanded single camera view
+      name: "",                            // This sapcer image is need to size the modal prior to real data
+      cameraURL: "http://www.clipartbest.com/cliparts/yio/eXG/yioeXG4RT.jpeg"
+    }];   // For the expanded single camera view 
+
     addEditCamera: AddEditCamera = {
         CameraId: null,
         Name: "",
@@ -159,16 +164,16 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
 
     camPicMenu(sentEvent, sentCamera) {
 
-        console.log(sentEvent);
-
         let camMenuAction: string = "";
         if (sentEvent.target.className.includes("icon")) {
             camMenuAction = sentEvent.target.parentElement.innerText;
         } else {
             camMenuAction = sentEvent.target.innerText;
         }
-
         switch (camMenuAction) {
+            case "Expand": 
+                this.expandCameraView(sentCamera);
+                break;
             case "Close": 
                 this.viewingCameras.splice(this.viewingCameras.indexOf(sentCamera), 1);
                 break;
@@ -181,9 +186,14 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     }
 
     submitCamera() {
+      if (this.addEditCamera.Name === "") {
+          this.showAddEditError();
+          return false;
+      }
 
       let userCamera = this.addEditCamera;
       delete userCamera.ModalTitle;
+      userCamera.WebAddress = "http://" + userCamera.WebAddress;
 
       if (userCamera.CameraId === null) {
           delete userCamera.CameraId;
@@ -198,13 +208,36 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
       }).map( res => this.extractData(res) )
       .subscribe(
           data => {
-          console.log(data);
+            this.userCameraList.push(data);
+            this.resetAddEditCameraObject();
           },
           err => {
-          console.log(err);
-          //this.registerError.registerMsg = err._body;
-          //this.registerError.anError = true;          
+            this.showAddEditError();
           }
       );
+    }
+
+    // Resets the Add CameraObject after new camera is submitted
+    // This can probably be done way better...
+    resetAddEditCameraObject() {
+      this.addEditCamera.CameraId = null,
+      this.addEditCamera.Name = "",
+      this.addEditCamera.Type = 0,
+      this.addEditCamera.WebAddress = "",
+      this.addEditCamera.LoginName = "",
+      this.addEditCamera.LoginPass = "",
+      this.addEditCamera.Private = 1,
+      this.addEditCamera.Location = "",
+      this.addEditCamera.ModalTitle = ""
+    }; 
+
+    expandCameraView(sentSingleCamera) {
+      this.expandedSingleCameraInfo.pop();
+      this.expandedSingleCameraInfo.push(sentSingleCamera);
+      $('.ui.expanded.camera.modal').modal('show');
+  }
+
+    showAddEditError() {
+        $('.ui.small.modal.error').modal('show');
     }
 }

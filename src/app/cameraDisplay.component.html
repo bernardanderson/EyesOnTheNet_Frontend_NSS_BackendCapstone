@@ -10,7 +10,7 @@
       <div class="item">
         <div class="ui button fluid" (click)="refreshTimer()">
           <i class="wait icon"></i>
-          Refresh: {{refreshTimerOptions[0].message}}</div>
+          Refresh All: {{refreshTimerOptions[0].message}}</div>
       </div>
 
       <a class="item" *ngFor="let camera of (userCameraList | cameraSearchPipe:cameraTerm.value)" (click)="addCamerasToView(camera)">
@@ -66,7 +66,7 @@
           <label>Unique Camera Name</label>
           <div class="ui left icon input">
             <i class="camera retro icon"></i>
-            <input type="text" placeholder="Camera Name" [(ngModel)]="addEditCamera.Name" >
+            <input type="text" placeholder="Camera Name (Required)" [(ngModel)]="addEditCamera.Name" >
           </div>        
         </div>
 
@@ -136,3 +136,33 @@
   </div>
 </div>
 <!--End Add/Edit Camera modal-->
+
+<!-- Start of Error Modal -->
+<div class="ui small modal error">
+  <div class="header">
+    There was a problem...
+  </div>
+  <div class="content">
+    <p>Camera information not added/updated!</p>
+  </div>
+  <div class="actions">
+    <div class="ui ok green button">
+      I Understand
+    </div>
+  </div>
+</div>
+<!-- End of Error Modal -->
+
+<!-- Start of Expanded Camera View Modal -->
+<div class="ui expanded camera modal" >
+  <div class="image content" *ngFor="let camera of expandedSingleCameraInfo">
+    <div class="ui huge image">
+      <img [src]="camera.cameraURL" />
+    </div>
+  </div>
+  <div class="actions">
+    <div class="ui positive button">
+      All Done
+    </div>
+  </div>
+</div>
