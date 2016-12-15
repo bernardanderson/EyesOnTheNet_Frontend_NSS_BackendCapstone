@@ -28,11 +28,19 @@ export class AppComponent {
   userMenuSelection(sentEvent): void {
     // When a menu item is clicked, this sends out the annoucement to all subscribers
     let message: string;
-    if (sentEvent.target.tagName === "I"){
+
+    console.log(sentEvent);
+
+    if (sentEvent.target.parentElement.tagName === "I"){
+      this.menuItem = sentEvent.target.parentElement.parentElement.innerText;
+    } else if (sentEvent.target.tagName === "I") {
       this.menuItem = sentEvent.target.parentElement.innerText;
     } else {
       this.menuItem = sentEvent.target.innerText;
     }
+
+    console.log(this.menuItem);
+    
     this.menuService.annouceMenuItem(this.menuItem);
 
     // This checks to see what action should be taken

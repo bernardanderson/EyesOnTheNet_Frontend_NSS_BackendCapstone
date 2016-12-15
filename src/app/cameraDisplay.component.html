@@ -49,4 +49,90 @@
     </div>
   </div>
 </div>
-  
+
+
+<!--Start Add/Edit Camera modal-->
+
+<div class="ui modal addcamera" >
+  <i class="close icon"></i>
+  <div class="header">
+    Add A New Camera
+  </div>
+
+  <div class="content">
+    <div class="ui form">
+      <div class="fields">
+        <div class="nine wide field">
+          <label>Unique Camera Name</label>
+          <div class="ui left icon input">
+            <i class="camera retro icon"></i>
+            <input type="text" placeholder="Camera Name" [(ngModel)]="addEditCamera.Name" >
+          </div>        
+        </div>
+
+        <div class="three wide field">
+          <label>Camera Type</label>
+          <select class="ui fluid search dropdown" [(ngModel)]="addEditCamera.Type">
+            <option [ngValue]="0">Foscam</option>
+            <option [ngValue]="1">IP Cam</option>
+            <option [ngValue]="2">Public</option>
+          </select>
+        </div>     
+      </div>
+
+      <div class="fields">
+        <div class="five wide field">
+          <label>User Name (for Authentication)</label>
+          <div class="ui left icon input">
+            <i class="user icon"></i>
+            <input type="text" placeholder="Leave blank if none..." [(ngModel)]="addEditCamera.LoginName">
+          </div>        
+        </div>
+
+        <div class="five wide field">
+          <label>User Password (for Authentication)</label>
+          <div class="ui left icon input">
+            <i class="unlock icon"></i>
+            <input type="text" placeholder="Leave blank if none..." [(ngModel)]="addEditCamera.LoginPass">
+          </div>        
+        </div>
+
+        <div class="five wide field">
+          <label>Allow Other Users Access?</label>
+          <select class="ui fluid search dropdown" [(ngModel)]="addEditCamera.Private">
+            <option [ngValue]="1">Keep Private</option>
+            <option [ngValue]="0">Make Public</option>
+          </select>
+        </div>  
+      </div>
+
+      <div class="field">
+        <div class="ui labeled input">
+          <div class="ui label">
+            http://
+          </div>
+          <input type="text" placeholder="Web Url String... (https not supported)" [(ngModel)]="addEditCamera.WebAddress">
+        </div>     
+      </div>
+
+      <div class="field">
+        <label>Physical Address</label>
+        <div class="ui left icon input">
+          <i class="map signs icon"></i>
+          <input type="text" placeholder="Example: 1111 East 8th Ave, Somewhere, ST 99911" [(ngModel)]="addEditCamera.Location">
+        </div>      
+      </div>
+
+    </div>
+  </div>
+    
+  <div class="actions">
+    <div class="ui black deny button">
+      Forget It
+    </div>
+    <div class="ui positive button" (click)="submitCamera()">
+      Submit Camera
+    </div>
+  </div>
+</div>
+<!--End Add/Edit Camera modal-->

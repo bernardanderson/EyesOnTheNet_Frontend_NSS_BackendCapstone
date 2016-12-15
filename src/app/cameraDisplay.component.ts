@@ -5,19 +5,30 @@ import { MenuService } from './menu.service';           // Needed for menu commu
 import { Subscription }   from 'rxjs/Subscription';     // Needed for menu communication
 import { Observable } from 'rxjs/Observable';
 import { IntervalObservable } from 'rxjs/observable/IntervalObservable'; // For Timer
+import { FormsModule } from '@angular/forms'; // Needed for ngModel
 import 'rxjs/add/operator/map';
 //
 import { GlobalVariables } from './global';
 
 declare var $: any;
 
+interface AddEditCamera {
+    CameraId: any,
+    Name: string,
+    Type: number,
+    WebAddress: string,
+    LoginName: string,
+    LoginPass: string,
+    Private: number,
+    Location: string,
+    ModalTitle: string
+}
+
 @Component({
     selector: 'cameraDisplay-view', 
     templateUrl: 'cameraDisplay.component.html',
     styleUrls: ['cameraDisplay.component.css']
 })
-
-// Add implements OnDestroy for menu communictation
 
 export class CameraDisplayComponent implements OnInit, OnDestroy {  
 
@@ -28,7 +39,21 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     subscription: Subscription;            // Needed for menu communication
     refreshinterval: number = 5000;        // For cam images refresh
     userCameraList: {}[] = [];             // Array of Possible User Cameras
+
+    addEditCamera: AddEditCamera = {
+        CameraId: null,
+        Name: "",
+        Type: 0,
+        WebAddress: "",
+        LoginName: "",
+        LoginPass: "",
+        Private: 1,
+        Location: "",
+        ModalTitle: ""
+    };          // For adding or editing a camera parameters
+
     refreshTimerClock: Subscription;       // For timer subscription
+
     refreshTimerOptions: {                 // Time options for the refreshes (in seconds)
             message: string,
             time: number } [] =          
@@ -38,6 +63,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
           {message: "15s", time:15000},
           {message: "30s", time:30000},
           {message: "60s", time:60000}];
+    
     viewingCameras: {                // Array of which cameras are currently being viewed
         cameraIdHash: number,
         cameraURL: string,
@@ -60,6 +86,9 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         this.subscription = menuService.selectedMenuItem$.subscribe(
         menuItem => {
             console.log("Menu Clicked") // Put code here to run functions or access the menuItems
+            if (menuItem === "Add Camera"){
+                $('.ui.modal.addcamera').modal('show');
+            }
         });
     }
 
@@ -149,5 +178,33 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
             default:
                 break;
         }
+    }
+
+    submitCamera() {
+
+      let userCamera = this.addEditCamera;
+      delete userCamera.ModalTitle;
+
+      if (userCamera.CameraId === null) {
+          delete userCamera.CameraId;
+      }
+
+      var headers = new Headers();
+      headers.append('Content-Type', 'application/json');
+
+      this.http.post(`http://${GlobalVariables.serverIP}/api/camera/addcamera`, 
+        JSON.stringify(userCamera), {
+        headers: headers, withCredentials: true
+      }).map( res => this.extractData(res) )
+      .subscribe(
+          data => {
+          console.log(data);
+          },
+          err => {
+          console.log(err);
+          //this.registerError.registerMsg = err._body;
+          //this.registerError.anError = true;          
+          }
+      );
     }
 }
