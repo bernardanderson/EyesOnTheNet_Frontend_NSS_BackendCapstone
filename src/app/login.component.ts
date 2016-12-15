@@ -60,7 +60,7 @@ export class LoginComponent {
         },
         err => {
           if (this.loginError.currentCount < this.loginError.maxCount) {
-            this.loginErrorMsg = `Login Unsuccessful: ${this.loginError.currentCount} of ${this.loginError.maxCount} attempts remain`;
+            this.loginErrorMsg = `Login failed: ${this.loginError.currentCount} of ${this.loginError.maxCount} attempts remain`;
           } else {
             this.router.navigateByUrl('/register');
           }

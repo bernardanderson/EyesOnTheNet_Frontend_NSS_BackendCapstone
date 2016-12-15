@@ -1,9 +1,28 @@
 <div class="ui container">
-  <div class="ui two column divided grid">
-    <div class="column">
+  <div class="ui two column grid">
+    <div class="ten wide column centered tentopmargin">
       <p>Eyes On The Net Image Goes Here</p>
     </div>
-    <div class="column">
+    <div class="five wide column twentytopmargin">
+      <div class="ui form">
+        <div class="field">
+          <label>User Name</label>
+          <input type="text" placeholder="User Name" #userName>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" placeholder="Password" #userPass>
+        </div>
+        <div class="ui button" (click)="getAuthorized(userName.value, userPass.value)">Login</div>
+      </div>
+      <div class="ui negative large message" *ngIf="loginError.currentCount !== 0">
+          {{loginErrorMsg}}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--
       <div class="row">
         <div class="ui left icon input">
           <i class="users icon"></i>
@@ -18,29 +37,8 @@
         </div>        
       </div>
       <div class="row">
-        <button class="ui button olive" (click)="getAuthorized(userName.value, userPass.value)">
-        <i class="sign in icon"></i>
-          Login
-        </button>
-      </div>
-      <div class="row">
         <p>{{loginErrorMsg}}</p>
     </div>
   </div>
 </div>
-<!--
-<button class="ui button red" (click)="showCam()">
-  Show the cam!
-</button>
-
-<a routerLink="/register" ><button class="ui button orange">
-  Show register!
-</button></a>
-
-
-<a routerLink="/cameras" ><button class="ui button orange">
-  Show CameraView!
-</button></a>
-
-<div class="cam-shower"></div>
 -->
