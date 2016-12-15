@@ -6,39 +6,22 @@
     <div class="five wide column twentytopmargin">
       <div class="ui form">
         <div class="field">
-          <label>User Name</label>
-          <input type="text" placeholder="User Name" #userName>
+          <div class="ui left icon input">
+            <i class="users icon"></i>
+            <input type="text" placeholder="User Name..." #userName>
+          </div>        
         </div>
         <div class="field">
-          <label>Password</label>
-          <input type="password" placeholder="Password" #userPass>
+          <div class="ui left icon input">
+            <i class="unlock icon"></i>
+            <input type="password" placeholder="Password..." #userPass>
+          </div>     
         </div>
         <div class="ui button" (click)="getAuthorized(userName.value, userPass.value)">Login</div>
       </div>
       <div class="ui negative large message" *ngIf="loginError.currentCount !== 0">
-          {{loginErrorMsg}}
+          {{loginError.loginErrorMsg}}
       </div>
     </div>
   </div>
 </div>
-
-<!--
-      <div class="row">
-        <div class="ui left icon input">
-          <i class="users icon"></i>
-          <input type="text" placeholder="User Name..." #userName>
-        </div>        
-      </div>
-
-      <div class="row">
-        <div class="ui left icon input">
-          <i class="unlock icon"></i>
-          <input type="password" placeholder="Password..." #userPass>
-        </div>        
-      </div>
-      <div class="row">
-        <p>{{loginErrorMsg}}</p>
-    </div>
-  </div>
-</div>
--->
