@@ -17,6 +17,7 @@ export class AppComponent {
   menuItem: string = "";
   menuActive: boolean = false;
 
+  // Sets up the router and menuService to watch clicks to the menu
   constructor(private menuService: MenuService, router: Router) {
     this.router = router;
     menuService.showMenu$.subscribe(
@@ -25,11 +26,8 @@ export class AppComponent {
       });
   }
 
+  // When a menu item is clicked, this finds which was cliked and sends out the annoucement to all subscribers
   userMenuSelection(sentEvent): void {
-    // When a menu item is clicked, this sends out the annoucement to all subscribers
-    let message: string;
-
-    console.log(sentEvent);
 
     if (sentEvent.target.parentElement.tagName === "I"){
       this.menuItem = sentEvent.target.parentElement.parentElement.innerText;
@@ -39,18 +37,15 @@ export class AppComponent {
       this.menuItem = sentEvent.target.innerText;
     }
 
-    console.log(this.menuItem);
-    
     this.menuService.annouceMenuItem(this.menuItem);
 
-    // This checks to see what action should be taken
+    // When the user clicks the Logout button
     if (this.menuItem === "Logout") {
       this.userLogout();
-
     }
-
   }
 
+  // For the Logout function
   userLogout() {
     document.cookie = "access_token=;Path=/;expires=Thu, 01 Jan 1970 00:00:01 GMT;";
     this.menuService.activateMenu(false);

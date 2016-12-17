@@ -85,7 +85,7 @@
           <label>User Name (for Authentication)</label>
           <div class="ui left icon input">
             <i class="user icon"></i>
-            <input type="text" placeholder="Leave blank if none..." [(ngModel)]="addEditCamera.LoginName">
+            <input type="text" placeholder="Leave blank if none..." (value)="addEditCamera.LoginName" [(ngModel)]="addEditCamera.LoginName">
           </div>        
         </div>
 

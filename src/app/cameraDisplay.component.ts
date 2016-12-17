@@ -38,7 +38,11 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
 // Properties    
     subscription: Subscription;            // Needed for menu communication
     refreshinterval: number = 5000;        // For cam images refresh
-    userCameraList: {}[] = [];             // Array of Possible User Cameras
+    userCameraList: {
+      cameraIdHash: any,
+      name: string,
+      location: string
+    }[] = [];                              // Array of Possible User Cameras
 
     expandedSingleCameraInfo: {}[] = [{    // For the expanded single camera view
       name: "",                            // This sapcer image is need to size the modal prior to real data
@@ -111,6 +115,23 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         })
     }
 
+    // Gets a single camera for editing and opens the edit modal
+    editSingleCamera(sentCamera) {
+      this.http.get(`http://${GlobalVariables.serverIP}/api/camera/${sentCamera.cameraIdHash}/singlecamera`,
+      { withCredentials: true } )
+      .map(res => this.extractData(res))
+      .subscribe(
+        data => {
+          console.log(data)
+          this.addEditCamera = data;
+          console.log(this.addEditCamera)
+          $('.ui.modal.addcamera').modal('show');
+        },
+        err => {
+          console.log(err);          
+        })
+    }
+
     // Snippette to process data received from the HTTP.get/posts
     private extractData(res: Response) {
       let body;
@@ -174,6 +195,9 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
             case "Expand": 
                 this.expandCameraView(sentCamera);
                 break;
+            case "Edit": 
+                this.editSingleCamera(sentCamera);
+                break;
             case "Close": 
                 this.viewingCameras.splice(this.viewingCameras.indexOf(sentCamera), 1);
                 break;
@@ -208,6 +232,13 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
       }).map( res => this.extractData(res) )
       .subscribe(
           data => {
+            for (let i = 0; i < this.userCameraList.length; i++) {
+              if (data.cameraIdHash === this.userCameraList[i].cameraIdHash) {
+                this.userCameraList[i] = data;
+                this.resetAddEditCameraObject();
+                return true;
+              }
+            } 
             this.userCameraList.push(data);
             this.resetAddEditCameraObject();
           },

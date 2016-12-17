@@ -10,8 +10,6 @@ export class MenuService {
   private showMenu = new Subject<boolean>();
 
 // Observable string streams
-  //selectedUri$ = this.selectedUri.asObservable();
-  //currentUri$ = this.currentUri.asObservable();
   selectedMenuItem$ = this.selectedMenuItem.asObservable();
   showMenu$ = this.showMenu.asObservable();
 
