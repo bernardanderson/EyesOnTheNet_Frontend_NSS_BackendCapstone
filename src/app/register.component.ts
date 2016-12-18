@@ -3,6 +3,7 @@ import { Http, Headers, Response} from '@angular/http';
 import { Router } from '@angular/router';
 import 'rxjs/add/operator/map';
 //
+import { HttpRequestService, IHttpRequestConf } from './httprequest.service';
 import { GlobalVariables } from './global';
 
 declare var $: any;
@@ -22,33 +23,27 @@ export class RegisterComponent {
     registerMsg: ""
   };
 
-  constructor(private http: Http, router: Router) { 
+  constructor(private http: Http, router: Router, private httpRequestService: HttpRequestService) { 
     this.router = router;
   }
 
-  getRegistered(sentUserName: string, sentUserPassword: string, sentUserEmail: string) {
-    let regCreds = JSON.stringify({
-      Username: sentUserName,
-      Password: sentUserPassword,
-      Email: sentUserEmail
-    });
+  postRegisteration(sentUserName: string, sentUserPassword: string, sentUserEmail: string) {
 
-    var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    headers.append('Access-Control-Allow-Origin', '*');
+    let httpRequestConf: IHttpRequestConf = {
+      apiPath: 'api/registration',
+      bodyData: JSON.stringify({ Username:sentUserName, Password:sentUserPassword, Email:sentUserEmail}),
+      returnType: 'text', // Needs return type text for proper completion
+      specialHeaders: [
+        { 'Content-Type': 'application/json' },
+        { 'Access-Control-Allow-Origin': '*' }
+      ]
+    }
 
-    this.http.post(`http://${GlobalVariables.serverIP}/api/registration`, regCreds, {
-      headers: headers,
-      }).map( res => res.text() )
-      .subscribe(
-        data => {
-          //this.registerError.registerMsg = data;
-          this.router.navigateByUrl('/');
-        },
+    this.httpRequestService.postAccess(httpRequestConf).subscribe(
+        data => { this.router.navigateByUrl('/') },
         err => {
-          console.log(err);
           this.registerError.registerMsg = err._body;
-          this.registerError.anError = true;          
+          this.registerError.anError = true;    
         }
       );
   }

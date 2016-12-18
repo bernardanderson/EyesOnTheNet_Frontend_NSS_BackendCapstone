@@ -9,6 +9,7 @@ declare var $: any;
 export interface IHttpRequestConf {
   apiPath: string,
   bodyData: any,
+  returnType: string,
   specialHeaders: {}[],
 }
 
@@ -34,8 +35,14 @@ export class HttpRequestService {
     // The actual post request
     return this.http.post(`http://${GlobalVariables.serverIP}/${sentHttpRequestConf.apiPath}`, sentHttpRequestConf.bodyData, {
       headers: headers,
-      }).map( res => this.extractData(res) );
-}
+      }).map( res => { 
+        if (sentHttpRequestConf.returnType === "text") {
+          return res.text();
+         } else {
+          return this.extractData(res);
+        } 
+    });
+  }
 
   // Checks to see if a post's response is text to then convert to Json. If not, it leaves it alone.
   private extractData(res: Response) {

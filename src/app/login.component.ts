@@ -38,28 +38,26 @@ export class LoginComponent {
   postAuthorization(sentUserName: string, sentUserPassword: string) {
 
     let httpRequestConf: IHttpRequestConf = {
-      bodyData: `username=${sentUserName}&password=${sentUserPassword}`,
       apiPath: 'token',
-      specialHeaders: [
-        { 'Content-Type': 'application/x-www-form-urlencoded' }
-      ]
+      bodyData: `username=${sentUserName}&password=${sentUserPassword}`,
+      returnType: 'Json',
+      specialHeaders: [{ 'Content-Type': 'application/x-www-form-urlencoded' }]
     }
 
     this.httpRequestService.postAccess(httpRequestConf).subscribe(
-        data => {
-          this.cookieBuilder(data); // Builds the JWT cookie
-          this.router.navigateByUrl("/cameras");
-        },
-        err => {
-          this.loginError.currentCount++; 
-          if (this.loginError.currentCount < this.loginError.maxCount) {
-            this.loginError.loginErrorMsg 
-              = `Login failed: ${this.loginError.currentCount} of ${this.loginError.maxCount} attempts remain`;
-          } else {
-            this.router.navigateByUrl('/register');
-          }
+      data => {
+        this.cookieBuilder(data); // Builds the JWT cookie
+        this.router.navigateByUrl("/cameras");
+      },
+      err => {
+        this.loginError.currentCount++; 
+        if (this.loginError.currentCount < this.loginError.maxCount) {
+          this.loginError.loginErrorMsg 
+            = `Login failed: ${this.loginError.currentCount} of ${this.loginError.maxCount} attempts remain`;
+        } else {
+          this.router.navigateByUrl('/register');
         }
-      );
+    });
   }
 
   // This builds a cookie of the JWT parameters, and sets the user name too.
