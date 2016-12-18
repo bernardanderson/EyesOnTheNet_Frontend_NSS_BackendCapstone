@@ -33,6 +33,7 @@ interface AddEditCamera {
 export class CameraDisplayComponent implements OnInit, OnDestroy {  
 
     // Inputted from menu communictation in App.Component
+    // ** (You don't need @Input any more) **
     @Input() selectedMenu:string;                           
     
 // Properties    

@@ -9,6 +9,7 @@ import { LoginComponent } from './login.component';
 import { RegisterComponent }  from './register.component';
 import { CameraDisplayComponent }  from './cameraDisplay.component';
 import { CameraSearchPipe } from './camerasearch.pipe';
+import { HttpRequestService } from './httprequest.service';           // Houses all the Get/Post Request Methods
 
 @NgModule({
   declarations: [
@@ -16,7 +17,7 @@ import { CameraSearchPipe } from './camerasearch.pipe';
     LoginComponent,
     RegisterComponent,
     CameraDisplayComponent,
-    CameraSearchPipe
+    CameraSearchPipe,
   ],
   imports: [
     BrowserModule,
@@ -28,7 +29,7 @@ import { CameraSearchPipe } from './camerasearch.pipe';
       { path: 'cameras', component: CameraDisplayComponent }
     ])
   ],
-  providers: [],
+  providers: [HttpRequestService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

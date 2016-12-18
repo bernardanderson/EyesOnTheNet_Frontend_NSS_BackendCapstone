@@ -17,7 +17,7 @@
             <input type="password" placeholder="Password..." #userPass>
           </div>     
         </div>
-        <div class="ui button" (click)="getAuthorized(userName.value, userPass.value)">Login</div>
+        <div class="ui button" (click)="postAuthorization(userName.value, userPass.value)">Login</div>
       </div>
       <div class="ui negative large message" *ngIf="loginError.currentCount !== 0">
           {{loginError.loginErrorMsg}}
