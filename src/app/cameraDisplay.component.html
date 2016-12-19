@@ -54,8 +54,11 @@
 <!--Start Add/Edit Camera modal-->
 
 <div class="ui modal addcamera" >
-  <div class="header">
-    Add A New Camera
+  <div class="header" #modalTitle  >
+    <span [ngSwitch]="addEditCamera.cameraId !== null">
+      <span *ngSwitchCase="true">Editing {{addEditCamera.name}}</span>
+      <span *ngSwitchDefault>Add A New Camera</span>
+    </span>
   </div>
 
   <div class="content">
@@ -129,11 +132,24 @@
     <div *ngIf="addEditCameraError.hasError"  class="ui negative message">
       <div class="header">{{addEditCameraError.message}}</div>
     </div>
+    <div *ngIf="addEditCamera.cameraId !== null" class="ui left floated animated fade red button" (click)="deleteCamera()">
+      <div class="visible content">
+        <i class="trash outline icon"></i>
+        Delete Camera
+      </div>
+      <div class="hidden content">
+        <i class="warning sign icon"></i>
+        Cannot Be Undone
+      </div>
+    </div>
     <div class="ui black deny button">
       Forget It
     </div>
     <div class="ui positive button" (click)="submitCamera()">
-      Submit Camera
+      <span [ngSwitch]="addEditCamera.cameraId !== null">
+        <span *ngSwitchCase="true">Update Camera</span>
+        <span *ngSwitchDefault>Submit New Camera</span>
+      </span>
     </div>
   </div>
 </div>
