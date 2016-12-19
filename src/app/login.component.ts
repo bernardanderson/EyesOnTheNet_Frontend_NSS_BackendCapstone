@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { Http, Headers, Response} from '@angular/http';
 import { Router } from '@angular/router';
 import 'rxjs/add/operator/map';
 //
+// Access to the Http Get/Post Methods
+import { HttpRequestService, IHttpRequestConf } from './httprequest.service';
 import { GlobalVariables } from './global';
 
 declare var $: any;
@@ -10,7 +11,7 @@ declare var $: any;
 @Component({
   selector: 'login-view',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
 })
 
 export class LoginComponent {
@@ -23,65 +24,46 @@ export class LoginComponent {
     loginErrorMsg: ""
   };
 
-  constructor(private http: Http, router: Router) { 
+  constructor(router: Router, private httpRequestService: HttpRequestService) { 
     this.router = router;
   }
 
-// Checks for the presence of the JWT key and if so skips the login.
+  // Checks for the presence of the JWT key and if so skips the login.
   ngOnInit() {
     if (document.cookie.indexOf("access_token") !== -1) {
-      console.log("Token Present!");
-      this.router.navigateByUrl("cameras");
-    } else {
-      console.log("Token Not Found!");
+      this.router.navigateByUrl("/cameras");
     }
   }
 
-  getAuthorized(sentUserName: string, sentUserPassword: string) {
-    var creds = "username=" + sentUserName + "&password=" + sentUserPassword;
+  postAuthorization(sentUserName: string, sentUserPassword: string) {
 
-    // Add method to check user name 
-    // Add method to Check password length/strength
-
-    var headers = new Headers();
-    headers.append('Content-Type', 'application/x-www-form-urlencoded');
-
-    this.http.post(`http://${GlobalVariables.serverIP}/token`, creds, {
-      headers: headers,
-      }).map( res => this.extractData(res) )
-      .subscribe(
-        data => {
-          data.name = sentUserName;
-          this.cookieBuilder(data);
-          this.loginError.currentCount = 0;
-          this.router.navigateByUrl('/cameras');
-        },
-        err => {
-          this.loginError.currentCount++; 
-          if (this.loginError.currentCount < this.loginError.maxCount) {
-            this.loginError.loginErrorMsg = `Login failed: ${this.loginError.currentCount} of ${this.loginError.maxCount} attempts remain`;
-          } else {
-            this.router.navigateByUrl('/register');
-          }
-        },
-        () =>  console.log('Authentication Succeeded')
-      );
-  }
-
-  // Neat code to check to see if a post's response is text to then convert to Json. If not, it leaves it alone. 
-  private extractData(res: Response) {
-    let body;
-    // check if empty, before call json
-    if (res.text()) {
-        body = res.json();
+    let httpRequestConf: IHttpRequestConf = {
+      apiPath: 'token',
+      bodyData: `username=${sentUserName}&password=${sentUserPassword}`,
+      returnType: 'Json',
+      specialHeaders: [{ 'Content-Type': 'application/x-www-form-urlencoded' }],
+      withCredentials: false
     }
-    return body || {};
+
+    this.httpRequestService.postAccess(httpRequestConf).subscribe(
+      data => {
+        this.cookieBuilder(data); // Builds the JWT cookie
+        this.router.navigateByUrl("/cameras");
+      },
+      err => {
+        this.loginError.currentCount++; 
+        if (this.loginError.currentCount < this.loginError.maxCount) {
+          this.loginError.loginErrorMsg 
+            = `Login failed: ${this.loginError.currentCount} of ${this.loginError.maxCount} attempts remain`;
+        } else {
+          this.router.navigateByUrl('/register');
+        }
+    });
   }
 
   // This builds a cookie of the JWT parameters, and sets the user name too.
-  private cookieBuilder(sentData) {
-    let cookieExpires = new Date((Date.now() + (sentData.expires_in - 60) * 1000)).toUTCString();
-    //document.cookie = `Name=${sentData.name}; expires=${cookieExpires}"`;
-    document.cookie = `access_token=${sentData.access_token}; expires=${cookieExpires}"`;
+  private cookieBuilder(sentJWT) {
+    let cookieExpires = new Date((Date.now() + (sentJWT.expires_in - 60) * 1000)).toUTCString();
+    document.cookie = `access_token=${sentJWT.access_token}; expires=${cookieExpires}"`;
   }
 }
