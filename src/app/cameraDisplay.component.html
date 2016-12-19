@@ -54,7 +54,6 @@
 <!--Start Add/Edit Camera modal-->
 
 <div class="ui modal addcamera" >
-  <i class="close icon"></i>
   <div class="header">
     Add A New Camera
   </div>
@@ -66,13 +65,13 @@
           <label>Unique Camera Name</label>
           <div class="ui left icon input">
             <i class="camera retro icon"></i>
-            <input type="text" placeholder="Camera Name (Required)" [(ngModel)]="addEditCamera.Name" >
+            <input type="text" placeholder="Camera Name (Required)" [(ngModel)]="addEditCamera.name" >
           </div>        
         </div>
 
         <div class="three wide field">
           <label>Camera Type</label>
-          <select class="ui fluid search dropdown" [(ngModel)]="addEditCamera.Type">
+          <select class="ui fluid search dropdown" [(ngModel)]="addEditCamera.type">
             <option [ngValue]="0">Foscam</option>
             <option [ngValue]="1">IP Cam</option>
             <option [ngValue]="2">Public</option>
@@ -85,7 +84,7 @@
           <label>User Name (for Authentication)</label>
           <div class="ui left icon input">
             <i class="user icon"></i>
-            <input type="text" placeholder="Leave blank if none..." (value)="addEditCamera.LoginName" [(ngModel)]="addEditCamera.LoginName">
+            <input type="text" placeholder="Leave blank if none..." [(ngModel)]="addEditCamera.loginName">
           </div>        
         </div>
 
@@ -93,13 +92,13 @@
           <label>User Password (for Authentication)</label>
           <div class="ui left icon input">
             <i class="unlock icon"></i>
-            <input type="text" placeholder="Leave blank if none..." [(ngModel)]="addEditCamera.LoginPass">
+            <input type="text" placeholder="Leave blank if none..." [(ngModel)]="addEditCamera.loginPass">
           </div>        
         </div>
 
         <div class="five wide field">
           <label>Allow Other Users Access?</label>
-          <select class="ui fluid search dropdown" [(ngModel)]="addEditCamera.Private">
+          <select class="ui fluid search dropdown" [(ngModel)]="addEditCamera.private">
             <option [ngValue]="1">Keep Private</option>
             <option [ngValue]="0">Make Public</option>
           </select>
@@ -111,7 +110,7 @@
           <div class="ui label">
             http://
           </div>
-          <input type="text" placeholder="Web Url String... (https not supported)" [(ngModel)]="addEditCamera.WebAddress">
+          <input type="text" placeholder="Web Url String... (https not supported)" [(ngModel)]="addEditCamera.webAddress">
         </div>     
       </div>
 
@@ -119,7 +118,7 @@
         <label>Physical Address</label>
         <div class="ui left icon input">
           <i class="map signs icon"></i>
-          <input type="text" placeholder="Example: 1111 East 8th Ave, Somewhere, ST 99911" [(ngModel)]="addEditCamera.Location">
+          <input type="text" placeholder="Example: 1111 East 8th Ave, Somewhere, ST 99911" [(ngModel)]="addEditCamera.location">
         </div>      
       </div>
 
@@ -127,6 +126,9 @@
   </div>
     
   <div class="actions">
+    <div *ngIf="addEditCameraError.hasError"  class="ui negative message">
+      <div class="header">{{addEditCameraError.message}}</div>
+    </div>
     <div class="ui black deny button">
       Forget It
     </div>
@@ -136,33 +138,3 @@
   </div>
 </div>
 <!--End Add/Edit Camera modal-->
-
-<!-- Start of Error Modal -->
-<div class="ui small modal error">
-  <div class="header">
-    There was a problem...
-  </div>
-  <div class="content">
-    <p>Camera information not added/updated!</p>
-  </div>
-  <div class="actions">
-    <div class="ui ok green button">
-      I Understand
-    </div>
-  </div>
-</div>
-<!-- End of Error Modal -->
-
-<!-- Start of Expanded Camera View Modal -->
-<div class="ui expanded camera modal" >
-  <div class="image content" *ngFor="let camera of expandedSingleCameraInfo">
-    <div class="ui huge image">
-      <img [src]="camera.cameraURL" />
-    </div>
-  </div>
-  <div class="actions">
-    <div class="ui positive button">
-      All Done
-    </div>
-  </div>
-</div>

@@ -1,27 +1,26 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core'; // Add Input, OnDestroy for menu communication
-import { Http, Headers, Response} from '@angular/http';
 import { Router } from '@angular/router';
-import { MenuService } from './menu.service';           // Needed for menu communication
 import { Subscription }   from 'rxjs/Subscription';     // Needed for menu communication
 import { Observable } from 'rxjs/Observable';
 import { IntervalObservable } from 'rxjs/observable/IntervalObservable'; // For Timer
 import { FormsModule } from '@angular/forms'; // Needed for ngModel
 import 'rxjs/add/operator/map';
 //
+import { MenuService } from './menu.service';           // Needed for menu communication
+import { HttpRequestService, IHttpRequestConf } from './httprequest.service';
 import { GlobalVariables } from './global';
 
 declare var $: any;
 
 interface AddEditCamera {
-    CameraId: any,
-    Name: string,
-    Type: number,
-    WebAddress: string,
-    LoginName: string,
-    LoginPass: string,
-    Private: number,
-    Location: string,
-    ModalTitle: string
+    cameraId: any,
+    name: string,
+    type: number,
+    webAddress: string,
+    loginName: string,
+    loginPass: string,
+    private: number,
+    location: string,
 }
 
 @Component({
@@ -45,21 +44,20 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
       location: string
     }[] = [];                              // Array of Possible User Cameras
 
-    expandedSingleCameraInfo: {}[] = [{    // For the expanded single camera view
-      name: "",                            // This sapcer image is need to size the modal prior to real data
-      cameraURL: "http://www.clipartbest.com/cliparts/yio/eXG/yioeXG4RT.jpeg"
-    }];   // For the expanded single camera view 
+    addEditCameraError = {
+        hasError: false,
+        message: ""
+    };
 
     addEditCamera: AddEditCamera = {
-        CameraId: null,
-        Name: "",
-        Type: 0,
-        WebAddress: "",
-        LoginName: "",
-        LoginPass: "",
-        Private: 1,
-        Location: "",
-        ModalTitle: ""
+        cameraId: null,
+        name: "",
+        type: 0,
+        webAddress: "",
+        loginName: "",
+        loginPass: "",
+        private: 1,
+        location: "",
     };          // For adding or editing a camera parameters
 
     refreshTimerClock: Subscription;       // For timer subscription
@@ -92,62 +90,39 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     }
 
     // The formatted constructor receives the menu information when changed in parent
-    constructor(private menuService: MenuService, private http: Http) {  
+    constructor(private menuService: MenuService, private httpRequestService: HttpRequestService) {  
         this.subscription = menuService.selectedMenuItem$.subscribe(
         menuItem => {
-            console.log("Menu Clicked") // Put code here to run functions or access the menuItems
             if (menuItem === "Add Camera"){
-                $('.ui.modal.addcamera').modal('show');
+                this.initAddEditModal();
             }
         });
     }
 
     // Gets the list of user cameras and populates the Camera MENU Cards
     getCameraList() {
-      this.http.get(`http://${GlobalVariables.serverIP}/api/camera`,
-      { withCredentials: true } )
-      .map(res => this.extractData(res))
+      this.httpRequestService.getAccess('api/camera')
       .subscribe(
-        data => {
-          this.userCameraList = this.userCameraList.concat(data);
-        },
-        err => {
-          console.log(err);          
-        })
+        data => { this.userCameraList = this.userCameraList.concat(data); },
+        err => { console.log(err); })
     }
 
     // Gets a single camera for editing and opens the edit modal
     editSingleCamera(sentCamera) {
-      this.http.get(`http://${GlobalVariables.serverIP}/api/camera/${sentCamera.cameraIdHash}/singlecamera`,
-      { withCredentials: true } )
-      .map(res => this.extractData(res))
-      .subscribe(
+      this.httpRequestService.getAccess(`api/camera/${sentCamera.cameraIdHash}/singlecamera`)
+        .subscribe(
         data => {
-          console.log(data)
-          this.addEditCamera = data;
-          console.log(this.addEditCamera)
-          $('.ui.modal.addcamera').modal('show');
+            this.addEditCamera = data;
+            this.addEditCamera.webAddress = this.addEditCamera.webAddress.slice(7);  // Removes the 'http://' from the edited Camera WebURL
+            this.initAddEditModal();
         },
-        err => {
-          console.log(err);          
-        })
-    }
-
-    // Snippette to process data received from the HTTP.get/posts
-    private extractData(res: Response) {
-      let body;
-      // check if empty, before call json
-      if (res.text()) {
-          body = res.json();
-      }
-      return body || {};
+        err => { console.log(err); })
     }
 
     // When a user selects a camera for viewing it gets added to the viewArray.
     //  If it's already being viewed, the IMG src string gets updated instead.
     addCamerasToView(sentCamera): boolean {
         sentCamera.cameraURL =`http://${GlobalVariables.serverIP}/api/camera/${sentCamera.cameraIdHash}/snapshot?${new Date().getTime()}`;
-
         for (let i = 0; i < this.viewingCameras.length; i++) {
             if (sentCamera.cameraIdHash === this.viewingCameras[i].cameraIdHash) {
                 this.viewingCameras[i] = sentCamera
@@ -185,7 +160,6 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     }
 
     camPicMenu(sentEvent, sentCamera) {
-
         let camMenuAction: string = "";
         if (sentEvent.target.className.includes("icon")) {
             camMenuAction = sentEvent.target.parentElement.innerText;
@@ -194,7 +168,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         }
         switch (camMenuAction) {
             case "Expand": 
-                this.expandCameraView(sentCamera);
+                // Add Expanded View Here
                 break;
             case "Edit": 
                 this.editSingleCamera(sentCamera);
@@ -210,41 +184,48 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         }
     }
 
+    // This is needed to submit a new camera or make a change to a current camera to the database
     submitCamera() {
-      if (this.addEditCamera.Name === "") {
-          this.showAddEditError();
+      if (this.addEditCamera.name === "") {
+          this.showAddEditError("Camera Requires a Unique Name");
           return false;
       }
 
       let userCamera = this.addEditCamera;
-      delete userCamera.ModalTitle;
-      userCamera.WebAddress = "http://" + userCamera.WebAddress;
+      userCamera.webAddress = "http://" + userCamera.webAddress;
 
-      if (userCamera.CameraId === null) {
-          delete userCamera.CameraId;
+      // If the camera doesn't have a CameraId, then it is a new camera and the Db will assign it a 
+      //  new CameraId entry.
+      if (userCamera.cameraId === null) {
+          delete userCamera.cameraId;
       }
 
-      var headers = new Headers();
-      headers.append('Content-Type', 'application/json');
+    let httpRequestConf: IHttpRequestConf = {
+      apiPath: 'api/camera/addcamera',
+      bodyData: JSON.stringify(userCamera),
+      returnType: 'Json',
+      specialHeaders: [{ 'Content-Type': 'application/json' }],
+      withCredentials: true
+    }
 
-      this.http.post(`http://${GlobalVariables.serverIP}/api/camera/addcamera`, 
-        JSON.stringify(userCamera), {
-        headers: headers, withCredentials: true
-      }).map( res => this.extractData(res) )
-      .subscribe(
+    this.httpRequestService.postAccess(httpRequestConf)
+    .subscribe(
           data => {
             for (let i = 0; i < this.userCameraList.length; i++) {
+              // If camera already exists, update the current camera element in array, otherwise add the new camera to array 
               if (data.cameraIdHash === this.userCameraList[i].cameraIdHash) {
                 this.userCameraList[i] = data;
                 this.resetAddEditCameraObject();
                 return true;
               }
             } 
-            this.userCameraList.push(data);
-            this.resetAddEditCameraObject();
+            this.userCameraList.push(data);   // If successfully added, Db returns the simplified "new" Camera.
+            this.resetAddEditCameraObject();  // Clears the add/edit input box
+            return true;
           },
           err => {
-            this.showAddEditError();
+              this.showAddEditError("Error Adding Camera");
+              return false;
           }
       );
     }
@@ -252,24 +233,30 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     // Resets the Add CameraObject after new camera is submitted
     // This can probably be done way better...
     resetAddEditCameraObject() {
-      this.addEditCamera.CameraId = null,
-      this.addEditCamera.Name = "",
-      this.addEditCamera.Type = 0,
-      this.addEditCamera.WebAddress = "",
-      this.addEditCamera.LoginName = "",
-      this.addEditCamera.LoginPass = "",
-      this.addEditCamera.Private = 1,
-      this.addEditCamera.Location = "",
-      this.addEditCamera.ModalTitle = ""
+      this.addEditCamera.cameraId = null,
+      this.addEditCamera.name = "",
+      this.addEditCamera.type = 0,
+      this.addEditCamera.webAddress = "",
+      this.addEditCamera.loginName = "",
+      this.addEditCamera.loginPass = "",
+      this.addEditCamera.private = 1,
+      this.addEditCamera.location = ""
     }; 
 
-    expandCameraView(sentSingleCamera) {
-      this.expandedSingleCameraInfo.pop();
-      this.expandedSingleCameraInfo.push(sentSingleCamera);
-      $('.ui.expanded.camera.modal').modal('show');
-  }
+    showAddEditError(sentErrorMessage: string) {
+        this.addEditCameraError.hasError = true;
+        this.addEditCameraError.message = sentErrorMessage;
+    }
 
-    showAddEditError() {
-        $('.ui.small.modal.error').modal('show');
+    // Initializes the Add/Edit Modal
+    initAddEditModal() {
+        this.addEditCameraError.hasError = false; // Clears any error messages
+        $('.ui.modal.addcamera').modal({
+            closable  : false,
+            onDeny    : () => {
+                this.resetAddEditCameraObject();
+            },
+            onApprove : () => this.submitCamera()
+        }).modal('show');
     }
 }

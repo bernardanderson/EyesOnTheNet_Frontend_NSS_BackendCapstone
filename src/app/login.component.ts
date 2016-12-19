@@ -41,7 +41,8 @@ export class LoginComponent {
       apiPath: 'token',
       bodyData: `username=${sentUserName}&password=${sentUserPassword}`,
       returnType: 'Json',
-      specialHeaders: [{ 'Content-Type': 'application/x-www-form-urlencoded' }]
+      specialHeaders: [{ 'Content-Type': 'application/x-www-form-urlencoded' }],
+      withCredentials: false
     }
 
     this.httpRequestService.postAccess(httpRequestConf).subscribe(

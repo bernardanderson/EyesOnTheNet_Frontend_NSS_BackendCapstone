@@ -36,7 +36,8 @@ export class RegisterComponent {
       specialHeaders: [
         { 'Content-Type': 'application/json' },
         { 'Access-Control-Allow-Origin': '*' }
-      ]
+      ],
+      withCredentials: false
     }
 
     this.httpRequestService.postAccess(httpRequestConf).subscribe(

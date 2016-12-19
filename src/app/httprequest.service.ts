@@ -1,5 +1,6 @@
+// This service gives a common set of methods simplifies POST or GET requests using common parameters. 
 import { Injectable } from '@angular/core';
-import { Http, Headers, Response} from '@angular/http';
+import { Http, Headers, Response, RequestOptions } from '@angular/http';
 import 'rxjs/add/operator/map';
 //
 import { GlobalVariables } from './global';
@@ -11,6 +12,7 @@ export interface IHttpRequestConf {
   bodyData: any,
   returnType: string,
   specialHeaders: {}[],
+  withCredentials: boolean
 }
 
 @Injectable()
@@ -32,10 +34,13 @@ export class HttpRequestService {
       }
     }
 
+    // Adds the headers and sets whether Credentials (the JWT Cookie) is needed to be sent too
+    let options = new RequestOptions({ headers: headers });
+    options.withCredentials = sentHttpRequestConf.withCredentials;
+
     // The actual post request
-    return this.http.post(`http://${GlobalVariables.serverIP}/${sentHttpRequestConf.apiPath}`, sentHttpRequestConf.bodyData, {
-      headers: headers,
-      }).map( res => { 
+    return this.http.post(`http://${GlobalVariables.serverIP}/${sentHttpRequestConf.apiPath}`, sentHttpRequestConf.bodyData, options
+      ).map( res => { 
         if (sentHttpRequestConf.returnType === "text") {
           return res.text();
          } else {
@@ -43,6 +48,14 @@ export class HttpRequestService {
         } 
     });
   }
+
+  // A universal get request.  All Get requests to this API require credentials.
+  getAccess(sentApiPath: string) {
+    return this.http.get(`http://${GlobalVariables.serverIP}/${sentApiPath}`,
+      { withCredentials: true } )
+      .map(res => this.extractData(res))
+  };
+
 
   // Checks to see if a post's response is text to then convert to Json. If not, it leaves it alone.
   private extractData(res: Response) {
