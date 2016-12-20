@@ -26,7 +26,8 @@ import { HttpRequestService } from './httprequest.service';           // Houses 
     RouterModule.forRoot([
       { path: '', pathMatch: 'full', component: LoginComponent },
       { path: 'register', component: RegisterComponent },
-      { path: 'cameras', component: CameraDisplayComponent }
+      { path: 'cameras', component: CameraDisplayComponent },
+      { path: '**', redirectTo: ''}
     ])
   ],
   providers: [HttpRequestService],
