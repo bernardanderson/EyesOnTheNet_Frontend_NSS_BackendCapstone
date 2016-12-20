@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import 'rxjs/add/operator/map';
 //
-// Access to the Http Get/Post Methods
 import { HttpRequestService, IHttpRequestConf } from './httprequest.service';
 import { GlobalVariables } from './global';
 

@@ -1,23 +1,29 @@
 <div class="ui container">
   <div class="ui two column grid">
-    <div class="ten wide column centered tentopmargin">
+    <div class="ten wide column tentopmargin">
       <p>Eyes On The Net Image Goes Here</p>
     </div>
     <div class="five wide column twentytopmargin">
       <div class="ui form">
         <div class="field">
+          <label>User Name</label>
           <div class="ui left icon input">
             <i class="users icon"></i>
             <input type="text" placeholder="User Name..." #userName>
           </div>        
         </div>
         <div class="field">
+          <label>Password</label>
           <div class="ui left icon input">
             <i class="unlock icon"></i>
             <input type="password" placeholder="Password..." #userPass>
           </div>     
         </div>
-        <div class="ui button" (click)="postAuthorization(userName.value, userPass.value)">Login</div>
+        <div class="two ui buttons">
+          <div class="ui blue button" (click)="postAuthorization(userName.value, userPass.value)">Login</div>
+          <div class="or"></div>
+          <div class="ui green button" (click)="router.navigateByUrl('/register')">Get Registered!</div>
+        </div>
       </div>
       <div class="ui negative large message" *ngIf="loginError.currentCount !== 0">
           {{loginError.loginErrorMsg}}

@@ -56,7 +56,7 @@
 <div class="ui modal addcamera" >
   <div class="header">
     <span [ngSwitch]="addEditCamera.cameraId !== null">
-      <span *ngSwitchCase="true">Editing {{addEditCamera.name}} Cam</span>
+      <span *ngSwitchCase="true">Editing <strong>{{addEditCamera.name}}</strong> Cam</span>
       <span *ngSwitchDefault>Add A New Camera</span>
     </span>
   </div>

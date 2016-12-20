@@ -4,6 +4,7 @@
       <div class="ui form">
 
       <div class="field">
+        <label>New User Name</label>
         <div class="ui left icon input">
           <i class="users icon"></i>
           <input type="text" placeholder="User Name..." #userName>
@@ -11,6 +12,7 @@
       </div>
 
       <div class="field">
+        <label>New Password</label>
         <div class="ui left icon input">
           <i class="unlock icon"></i>
           <input type="password" placeholder="Password..." #userPass>
@@ -18,17 +20,17 @@
       </div>
 
       <div class="field">
+        <label>Valid Email Address</label>
         <div class="ui left icon input">
           <i class="at icon"></i>
           <input type="email" placeholder="Email Address..." #userEmail>
         </div>        
       </div>
-
-      <div class="ui button olive" (click)="postRegisteration(userName.value, userPass.value, userEmail.value)">
-        <i class="sign in icon"></i>
-        Get Registered!
+      <div class="two ui buttons">
+        <div class="ui green button" (click)="postRegisteration(userName.value, userPass.value, userEmail.value)">Register!</div>
+        <div class="or"></div>
+        <div class="ui blue button" (click)="router.navigateByUrl('')">Return to Login</div>
       </div>
-      
       <div class="ui negative large message" *ngIf="registerError.anError">
         <p>{{registerError.registerMsg}}</p>
       </div>
