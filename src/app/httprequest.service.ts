@@ -56,6 +56,11 @@ export class HttpRequestService {
       .map(res => this.extractData(res))
   };
 
+  deleteCamera(sentApiPath: string) {
+    return this.http.delete(`http://${GlobalVariables.serverIP}/${sentApiPath}`,
+      { withCredentials: true } )
+      .map(res => this.extractData(res))
+  };
 
   // Checks to see if a post's response is text to then convert to Json. If not, it leaves it alone.
   private extractData(res: Response) {

@@ -39,7 +39,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     subscription: Subscription;            // Needed for menu communication
     refreshinterval: number = 5000;        // For cam images refresh
     userCameraList: {
-      cameraIdHash: any,
+      cameraIdHash: number,
       name: string,
       location: string
     }[] = [];                              // Array of Possible User Cameras
@@ -94,6 +94,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         this.subscription = menuService.selectedMenuItem$.subscribe(
         menuItem => {
             if (menuItem === "Add Camera"){
+                this.resetAddEditCameraObject();
                 this.initAddEditModal();
             }
         });
@@ -213,14 +214,14 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
           data => {
             for (let i = 0; i < this.userCameraList.length; i++) {
               // If camera already exists, update the current camera element in array, otherwise add the new camera to array 
-              if (data.cameraIdHash === this.userCameraList[i].cameraIdHash) {
+              if (data.cameraIdHash == this.userCameraList[i].cameraIdHash) {
                 this.userCameraList[i] = data;
-                this.resetAddEditCameraObject();
+                $('.ui.modal.addcamera').modal('hide');
                 return true;
               }
-            } 
+            }
+            $('.ui.modal.addcamera').modal('hide');
             this.userCameraList.push(data);   // If successfully added, Db returns the simplified "new" Camera.
-            this.resetAddEditCameraObject();  // Clears the add/edit input box
             return true;
           },
           err => {
@@ -228,6 +229,10 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
               return false;
           }
       );
+    }
+
+    abortCameraSubmit() {
+        $('.ui.modal.addcamera').modal('hide');
     }
 
     // Resets the Add CameraObject after new camera is submitted
@@ -252,11 +257,33 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     initAddEditModal() {
         this.addEditCameraError.hasError = false; // Clears any error messages
         $('.ui.modal.addcamera').modal({
-            closable  : false,
-            onDeny    : () => {
-                this.resetAddEditCameraObject();
-            },
-            onApprove : () => this.submitCamera()
+            closable  : false
         }).modal('show');
+    }
+
+    deleteCamera() {
+        this.httpRequestService.deleteCamera(`api/camera/${this.addEditCamera.cameraId}`)
+        .subscribe(
+            data => {
+                // With successful delete, removes camera from local availabilty list
+                for (let i = 0; i < this.userCameraList.length; i++) {
+                    if (this.userCameraList[i].cameraIdHash == data.cameraId) {
+                        this.userCameraList.splice(i, 1);
+                    }
+                }
+                // With successful delete, removes camera from viewing panel
+                for (let i = 0; i < this.viewingCameras.length; i++) {
+                    if (this.viewingCameras[i].cameraIdHash == data.cameraId) {
+                        this.viewingCameras.splice(i, 1);
+                    }
+                }
+                $('.ui.modal.addcamera').modal('hide');
+            },
+            err => {
+                this.addEditCameraError = {
+                    hasError: true,
+                    message: "Camera Delete Failed"
+                };
+            })
     }
 }

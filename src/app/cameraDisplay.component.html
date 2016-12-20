@@ -54,9 +54,9 @@
 <!--Start Add/Edit Camera modal-->
 
 <div class="ui modal addcamera" >
-  <div class="header" #modalTitle  >
+  <div class="header">
     <span [ngSwitch]="addEditCamera.cameraId !== null">
-      <span *ngSwitchCase="true">Editing {{addEditCamera.name}}</span>
+      <span *ngSwitchCase="true">Editing {{addEditCamera.name}} Cam</span>
       <span *ngSwitchDefault>Add A New Camera</span>
     </span>
   </div>
@@ -109,16 +109,17 @@
       </div>
 
       <div class="field">
+        <label>Camera Web Address</label>
         <div class="ui labeled input">
           <div class="ui label">
             http://
           </div>
-          <input type="text" placeholder="Web Url String... (https not supported)" [(ngModel)]="addEditCamera.webAddress">
+          <input type="text" placeholder="Web Url... (https not supported)" [(ngModel)]="addEditCamera.webAddress">
         </div>     
       </div>
 
       <div class="field">
-        <label>Physical Address</label>
+        <label>Physical Location or Address</label>
         <div class="ui left icon input">
           <i class="map signs icon"></i>
           <input type="text" placeholder="Example: 1111 East 8th Ave, Somewhere, ST 99911" [(ngModel)]="addEditCamera.location">
@@ -142,7 +143,7 @@
         Cannot Be Undone
       </div>
     </div>
-    <div class="ui black deny button">
+    <div class="ui black deny button" (click)="abortCameraSubmit()">
       Forget It
     </div>
     <div class="ui positive button" (click)="submitCamera()">
