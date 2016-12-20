@@ -55,7 +55,10 @@
 
 <div class="ui modal addcamera" >
   <div class="header">
-    Add A New Camera
+    <span [ngSwitch]="addEditCamera.cameraId !== null">
+      <span *ngSwitchCase="true">Editing {{addEditCamera.name}} Cam</span>
+      <span *ngSwitchDefault>Add A New Camera</span>
+    </span>
   </div>
 
   <div class="content">
@@ -106,16 +109,17 @@
       </div>
 
       <div class="field">
+        <label>Camera Web Address</label>
         <div class="ui labeled input">
           <div class="ui label">
             http://
           </div>
-          <input type="text" placeholder="Web Url String... (https not supported)" [(ngModel)]="addEditCamera.webAddress">
+          <input type="text" placeholder="Web Url... (https not supported)" [(ngModel)]="addEditCamera.webAddress">
         </div>     
       </div>
 
       <div class="field">
-        <label>Physical Address</label>
+        <label>Physical Location or Address</label>
         <div class="ui left icon input">
           <i class="map signs icon"></i>
           <input type="text" placeholder="Example: 1111 East 8th Ave, Somewhere, ST 99911" [(ngModel)]="addEditCamera.location">
@@ -129,11 +133,24 @@
     <div *ngIf="addEditCameraError.hasError"  class="ui negative message">
       <div class="header">{{addEditCameraError.message}}</div>
     </div>
-    <div class="ui black deny button">
+    <div *ngIf="addEditCamera.cameraId !== null" class="ui left floated animated fade red button" (click)="deleteCamera()">
+      <div class="visible content">
+        <i class="trash outline icon"></i>
+        Delete Camera
+      </div>
+      <div class="hidden content">
+        <i class="warning sign icon"></i>
+        Cannot Be Undone
+      </div>
+    </div>
+    <div class="ui black deny button" (click)="abortCameraSubmit()">
       Forget It
     </div>
     <div class="ui positive button" (click)="submitCamera()">
-      Submit Camera
+      <span [ngSwitch]="addEditCamera.cameraId !== null">
+        <span *ngSwitchCase="true">Update Camera</span>
+        <span *ngSwitchDefault>Submit New Camera</span>
+      </span>
     </div>
   </div>
 </div>
