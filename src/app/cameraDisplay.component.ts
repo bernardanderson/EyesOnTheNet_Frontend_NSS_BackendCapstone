@@ -44,6 +44,8 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
       location: string
     }[] = [];                              // Array of Possible User Cameras
 
+    currentView: string = "multiView";      // Used to control the 'child view' of the camera window (Multi or Single)
+
     addEditCameraError = {
         hasError: false,
         message: ""
@@ -79,6 +81,13 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         location: string
     } [] = [];
     
+    currentSingleCamera: {          // The data member for the currently viewing single camera
+        cameraIdHash: number,
+        cameraURL: string,
+        name: string,
+        location: string
+    } [] = [];
+
     ngOnInit() {
         this.menuService.activateMenu(true);    // Shows the nav-menu on page load
         this.getCameraList();                   // Pulls the users cameras on page load
@@ -96,6 +105,12 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
             if (menuItem === "Add Camera"){
                 this.resetAddEditCameraObject();
                 this.initAddEditModal();
+            }
+            if (menuItem === "Multi-Camera") {
+                this.currentView = "multiView";
+            }
+            if (menuItem === "Single Camera") {
+                this.currentView = "singleCamera";
             }
         });
     }
@@ -169,7 +184,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         }
         switch (camMenuAction) {
             case "Expand": 
-                // Add Expanded View Here
+                this.singleCameraView(sentCamera);
                 break;
             case "Edit": 
                 this.editSingleCamera(sentCamera);
@@ -184,6 +199,14 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
                 break;
         }
     }
+
+    // Code for the Single Camera View
+    singleCameraView(sentCamera) {
+        this.currentView = "singleCamera";
+        this.currentSingleCamera.splice(0, 1);
+        this.currentSingleCamera.push(sentCamera);
+    }
+
 
     // This is needed to submit a new camera or make a change to a current camera to the database
     submitCamera() {
