@@ -44,6 +44,8 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
       location: string
     }[] = [];                              // Array of Possible User Cameras
 
+    currentView: string = "multiView";      // Used to control the 'child view' of the camera window (Multi or Single)
+
     addEditCameraError = {
         hasError: false,
         message: ""
@@ -79,6 +81,15 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         location: string
     } [] = [];
     
+    currentSingleCamera: {          // The data member for the currently viewing single camera
+        cameraIdHash: number,
+        cameraURL: string,
+        name: string,
+        location: string,
+        zoomLevel: number,
+        googleMapURL: string
+    } [] = [];
+
     ngOnInit() {
         this.menuService.activateMenu(true);    // Shows the nav-menu on page load
         this.getCameraList();                   // Pulls the users cameras on page load
@@ -96,6 +107,12 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
             if (menuItem === "Add Camera"){
                 this.resetAddEditCameraObject();
                 this.initAddEditModal();
+            }
+            if (menuItem === "Multi-Camera") {
+                this.currentView = "multiView";
+            }
+            if (menuItem === "Single Camera") {
+                this.currentView = "singleCamera";
             }
         });
     }
@@ -169,7 +186,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         }
         switch (camMenuAction) {
             case "Expand": 
-                // Add Expanded View Here
+                this.singleCameraView(sentCamera);
                 break;
             case "Edit": 
                 this.editSingleCamera(sentCamera);
@@ -183,6 +200,34 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
             default:
                 break;
         }
+    }
+
+    // Code for the Single Camera View
+    singleCameraView(sentCamera) {
+        this.currentView = "singleCamera";
+        
+        let tempSingleCamera = JSON.parse(JSON.stringify(sentCamera))
+        tempSingleCamera.zoomLevel = 7;
+
+        tempSingleCamera.googleMapURL= `http://${GlobalVariables.serverIP}/api/camera/${tempSingleCamera.cameraIdHash}/${tempSingleCamera.zoomLevel}/googlemap`;
+
+        this.currentSingleCamera.splice(0, 1);
+        this.currentSingleCamera.push(tempSingleCamera);
+    }
+
+    // Zooms the GoogleMap In and Out
+    mapZoom(sentZoomDirection) {
+
+      let tempSingleCamera = this.currentSingleCamera[0];
+
+      if (sentZoomDirection === "out" && tempSingleCamera.zoomLevel > 0) {
+        console.log("zooming out");
+        tempSingleCamera.zoomLevel--;
+      } else if (sentZoomDirection === "in" && tempSingleCamera.zoomLevel < 17) {
+        console.log("zooming in");
+        tempSingleCamera.zoomLevel++;
+      }
+        tempSingleCamera.googleMapURL = `http://${GlobalVariables.serverIP}/api/camera/${tempSingleCamera.cameraIdHash}/${tempSingleCamera.zoomLevel}/googlemap`;
     }
 
     // This is needed to submit a new camera or make a change to a current camera to the database

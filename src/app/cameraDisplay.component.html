@@ -10,6 +10,7 @@
       <div class="item">
         <div class="ui button fluid" (click)="refreshTimer()">
           <i class="wait icon"></i>
+
           Refresh All: {{refreshTimerOptions[0].message}}</div>
       </div>
 
@@ -21,26 +22,77 @@
   </div>
   
   <div class="twelve wide column">
-    <div class="ui two column grid">
-      <div class="column" *ngFor="let camera of viewingCameras">
-          <div class="ui segment" (click)="camPicMenu($event, camera)">
-            <div class="ui grid">
-              <div class="column">
-                <h3 class="ui header centered">{{camera.name}}</h3>
-                <img class="ui rounded image centered" [src]="camera.cameraURL"/>
-                <div class="ui four item text menu">
-                  <a class="item">
-                    <i class="zoom icon"></i> Expand
-                  </a>
-                  <a class="item">
-                    <i class="edit icon"></i> Edit
-                  </a>
-                  <a class="item">
-                    <i class="refresh icon"></i> Refresh
-                  </a>
-                  <a class="item">
-                    <i class="remove icon"></i> Close
-                  </a>
+
+    <div [ngSwitch]="currentView">
+
+      <!-- The View for multiple Cameras -->
+      <div *ngSwitchCase="'multiView'">
+        <div class="ui two column grid">
+          <div class="column" *ngFor="let camera of viewingCameras">
+              <div class="ui segment" (click)="camPicMenu($event, camera)">
+                <div class="ui grid">
+                  <div class="column">
+                    <h3 class="ui header centered">{{camera.name}}</h3>
+                    <img class="ui rounded image centered" [src]="camera.cameraURL"/>
+                    <div class="ui four item text menu">
+                      <a class="item">
+                        <i class="zoom icon"></i> Expand
+                      </a>
+                      <a class="item">
+                        <i class="edit icon"></i> Edit
+                      </a>
+                      <a class="item">
+                        <i class="refresh icon"></i> Refresh
+                      </a>
+                      <a class="item">
+                        <i class="remove icon"></i> Close
+                      </a>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!--The view for a single camera-->
+    <div *ngSwitchCase="'singleCamera'">
+        <div class="ui two column grid" *ngFor="let oneSingleCamera of currentSingleCamera">
+          <div class="eleven wide column">
+              <div class="ui segment" (click)="camPicMenu($event, oneSingleCamera)">
+                <div class="ui grid">
+                  <div class="column">
+                    <h3 class="ui header centered">{{oneSingleCamera.name}}</h3>
+                    <img class="ui rounded huge image centered" [src]=oneSingleCamera.cameraURL>
+                    <div class="ui four item text menu">
+                      <a class="item">
+                        <i class="zoom icon"></i> Expand
+                      </a>
+                      <a class="item">
+                        <i class="edit icon"></i> Edit
+                      </a>
+                      <a class="item">
+                        <i class="refresh icon"></i> Refresh
+                      </a>
+                      <a class="item">
+                        <i class="remove icon"></i> Close
+                      </a>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="five wide column">
+            <div class="ui attached segment"> 
+              <h3 class="ui header centered">GeoLocation</h3>
+              <img class="ui image" [src]="oneSingleCamera.googleMapURL">
+            </div>
+            <div class="ui two bottom attached mini buttons">
+                <div class="ui button" (click)="mapZoom('out')">
+                  <i class="zoom out icon"></i> Zoom Out
+                </div>
+                <div class="ui button" (click)="mapZoom('in')">
+                  <i class="zoom icon"></i> Zoom In
                 </div>
             </div>
           </div>
@@ -48,7 +100,6 @@
       </div>
     </div>
   </div>
-</div>
 
 
 <!--Start Add/Edit Camera modal-->
