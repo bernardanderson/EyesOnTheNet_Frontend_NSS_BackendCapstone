@@ -85,7 +85,9 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         cameraIdHash: number,
         cameraURL: string,
         name: string,
-        location: string
+        location: string,
+        zoomLevel: number,
+        googleMapURL: string
     } [] = [];
 
     ngOnInit() {
@@ -203,10 +205,30 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     // Code for the Single Camera View
     singleCameraView(sentCamera) {
         this.currentView = "singleCamera";
+        
+        let tempSingleCamera = JSON.parse(JSON.stringify(sentCamera))
+        tempSingleCamera.zoomLevel = 7;
+
+        tempSingleCamera.googleMapURL= `http://${GlobalVariables.serverIP}/api/camera/${tempSingleCamera.cameraIdHash}/${tempSingleCamera.zoomLevel}/googlemap`;
+
         this.currentSingleCamera.splice(0, 1);
-        this.currentSingleCamera.push(sentCamera);
+        this.currentSingleCamera.push(tempSingleCamera);
     }
 
+    // Zooms the GoogleMap In and Out
+    mapZoom(sentZoomDirection) {
+
+      let tempSingleCamera = this.currentSingleCamera[0];
+
+      if (sentZoomDirection === "out" && tempSingleCamera.zoomLevel > 0) {
+        console.log("zooming out");
+        tempSingleCamera.zoomLevel--;
+      } else if (sentZoomDirection === "in" && tempSingleCamera.zoomLevel < 17) {
+        console.log("zooming in");
+        tempSingleCamera.zoomLevel++;
+      }
+        tempSingleCamera.googleMapURL = `http://${GlobalVariables.serverIP}/api/camera/${tempSingleCamera.cameraIdHash}/${tempSingleCamera.zoomLevel}/googlemap`;
+    }
 
     // This is needed to submit a new camera or make a change to a current camera to the database
     submitCamera() {

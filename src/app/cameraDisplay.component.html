@@ -83,12 +83,23 @@
             </div>
           </div>
           <div class="five wide column">
-            <p>Hello There</p>
+            <div class="ui attached segment"> 
+              <h3 class="ui header centered">GeoLocation</h3>
+              <img class="ui image" [src]="oneSingleCamera.googleMapURL">
+            </div>
+            <div class="ui two bottom attached mini buttons">
+                <div class="ui button" (click)="mapZoom('out')">
+                  <i class="zoom out icon"></i> Zoom Out
+                </div>
+                <div class="ui button" (click)="mapZoom('in')">
+                  <i class="zoom icon"></i> Zoom In
+                </div>
+            </div>
           </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
 
 <!--Start Add/Edit Camera modal-->
