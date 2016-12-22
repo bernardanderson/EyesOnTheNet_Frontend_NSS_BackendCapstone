@@ -26,7 +26,7 @@
 
 ### How to run:
 ```
-1. Install the [Angular-cli 1.0.0-beta.21](https://github.com/angular/angular-cli)
+1. Install the Angular-CLI 1.0.0-beta.21 package
 2. Download/Clone this repo  
 3. At the base directory run `ng serve` to serve the pages  
 ```
