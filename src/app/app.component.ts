@@ -14,7 +14,7 @@ declare var $: any;
 export class AppComponent {
 
   router: Router;
-  menuItem: string = "";
+  menuItem: string = "Multi-Camera";
   menuActive: boolean = false;
 
   // Sets up the router and menuService to watch clicks to the menu

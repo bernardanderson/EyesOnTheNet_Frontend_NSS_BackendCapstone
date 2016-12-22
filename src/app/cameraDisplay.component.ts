@@ -140,15 +140,20 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     // When a user selects a camera for viewing it gets added to the viewArray.
     //  If it's already being viewed, the IMG src string gets updated instead.
     addCamerasToView(sentCamera): boolean {
-        sentCamera.cameraURL =`http://${GlobalVariables.serverIP}/api/camera/${sentCamera.cameraIdHash}/snapshot?${new Date().getTime()}`;
-        for (let i = 0; i < this.viewingCameras.length; i++) {
-            if (sentCamera.cameraIdHash === this.viewingCameras[i].cameraIdHash) {
-                this.viewingCameras[i] = sentCamera
-                return true;       
+        if (this.currentView === "singleCamera") {
+            this.singleCameraView(sentCamera);
+            return true;
+        } else {
+            sentCamera.cameraURL =`http://${GlobalVariables.serverIP}/api/camera/${sentCamera.cameraIdHash}/snapshot?${new Date().getTime()}`;
+            for (let i = 0; i < this.viewingCameras.length; i++) {
+                if (sentCamera.cameraIdHash === this.viewingCameras[i].cameraIdHash) {
+                    this.viewingCameras[i] = sentCamera
+                    return true;       
+                }
             }
+            this.viewingCameras.push(sentCamera);
+            return true;
         }
-        this.viewingCameras.push(sentCamera);
-        return true;
     }
 
     // Controls the starting and stopping of the refreshes of the cam images
@@ -170,10 +175,16 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
 
     // This refreshes the viewing camera URLs
     refreshCamViewImages() {
-        for(let i = 0; i < this.viewingCameras.length; i++) {
-            let tempUrlString = this.viewingCameras[i].cameraURL;
+        if (this.currentView === "singleCamera") {
+            let tempUrlString = this.currentSingleCamera[0].cameraURL;
             tempUrlString = tempUrlString.slice(0, tempUrlString.indexOf("?"));
-            this.viewingCameras[i].cameraURL = `${tempUrlString}?${new Date().getTime()}`;
+            this.currentSingleCamera[0].cameraURL = `${tempUrlString}?${new Date().getTime()}`;
+        } else {
+            for(let i = 0; i < this.viewingCameras.length; i++) {
+                let tempUrlString = this.viewingCameras[i].cameraURL;
+                tempUrlString = tempUrlString.slice(0, tempUrlString.indexOf("?"));
+                this.viewingCameras[i].cameraURL = `${tempUrlString}?${new Date().getTime()}`;
+            }
         }
     }
 
@@ -192,10 +203,18 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
                 this.editSingleCamera(sentCamera);
                 break;
             case "Close": 
-                this.viewingCameras.splice(this.viewingCameras.indexOf(sentCamera), 1);
+                if (this.currentView === "singleCamera") {
+                    this.currentSingleCamera.pop();
+                } else {
+                    this.viewingCameras.splice(this.viewingCameras.indexOf(sentCamera), 1);
+                }
                 break;
-            case "Refresh": 
-                this.addCamerasToView(sentCamera);
+            case "Refresh":
+                if (this.currentView === "singleCamera") {
+                    this.refreshCamViewImages();
+                } else {
+                    this.addCamerasToView(sentCamera);
+                }
                 break;
             default:
                 break;
@@ -206,10 +225,12 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     singleCameraView(sentCamera) {
         this.currentView = "singleCamera";
         
-        let tempSingleCamera = JSON.parse(JSON.stringify(sentCamera))
+        let tempSingleCamera = JSON.parse(JSON.stringify(sentCamera));
+        tempSingleCamera.cameraURL =`http://${GlobalVariables.serverIP}/api/camera/${tempSingleCamera.cameraIdHash}/snapshot?${new Date().getTime()}`;
+        
         tempSingleCamera.zoomLevel = 7;
 
-        tempSingleCamera.googleMapURL= `http://${GlobalVariables.serverIP}/api/camera/${tempSingleCamera.cameraIdHash}/${tempSingleCamera.zoomLevel}/googlemap`;
+        tempSingleCamera.googleMapURL= `http://${GlobalVariables.serverIP}/api/camera/${tempSingleCamera.cameraIdHash}/${tempSingleCamera.zoomLevel}/googlemap?${new Date().getTime()}`;
 
         this.currentSingleCamera.splice(0, 1);
         this.currentSingleCamera.push(tempSingleCamera);
