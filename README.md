@@ -19,7 +19,7 @@
 ##### An aesthetically pleasing Frontend interface for the capstone's Part-1 Backend Web API component.
 
 > This Frontend component allows the user a comfortable interface to access the capstone's Part-2 Backend component.
-> With this a user can:
+> With this a user can:  
 > 1. Login/Register for an account  
 > 2. Add/Edit/Delete Public, Local (protected/unprotected) Webcams to their account  
 > 3. View an array of camera feeds  
