@@ -20,10 +20,10 @@
 
 > This Frontend component allows the user a comfortable interface to access the capstone's Part-2 Backend component.
 > With this a user can:
-> 1. Login/Register for an account
-> 1. Add/Edit/Delete Public, Local (protected/unprotected) Webcams to their account
-> 1. View an array of camera feeds
-> 1. View a single camera feed and see it's GeoLocation via the GoogleMaps API 
+> 1. Login/Register for an account  
+> 2. Add/Edit/Delete Public, Local (protected/unprotected) Webcams to their account  
+> 3. View an array of camera feeds  
+> 4. View a single camera feed and see it's GeoLocation via the GoogleMaps API   
 
 ### How to run:
 ```
