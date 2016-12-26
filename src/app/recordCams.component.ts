@@ -23,7 +23,7 @@ export class RecordCamsComponent implements OnInit, OnDestroy {
 // Properties    
     subscription: Subscription;            // Needed for menu communication
 
-    currentView: string = "Record Cams";      // Used to control the 'child view' of the camera window (Multi or Single)
+    currentView: string = "";      // Used to control the 'child view' of the camera window (Multi or Single)
 
     ngOnInit() {
         this.menuService.activateMenu(true);    // Shows the nav-menu on page load
@@ -39,15 +39,12 @@ export class RecordCamsComponent implements OnInit, OnDestroy {
         this.subscription = menuService.selectedMenuItem$.subscribe(
         menuItem => {
             if (menuItem === "Add Camera"){
-                console.log("Add Camera");
             }
             if (menuItem === "Record Cams") {
                 this.currentView = "recordcams";
-                console.log("Add Camera");
             }
             if (menuItem === "Cam DVR") {
                 this.currentView = "camdvr";
-                console.log("Cam DVR");
             }
         });
     }

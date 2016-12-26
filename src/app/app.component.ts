@@ -39,8 +39,29 @@ export class AppComponent {
     this.menuService.annouceMenuItem(this.menuItem);
 
     // When the user clicks the Logout button
-    if (this.menuItem === "Logout") {
+    switch (this.menuItem) {
+      case "Logout": 
       this.userLogout();
+      break;
+      case "Add Camera":
+      console.log("Add Camera");
+      break;
+      case "Multi-Camera":
+      this.router.navigateByUrl("/cameras");
+      console.log("Multi-Camera");
+      break;
+      case "Single Camera":
+      this.router.navigateByUrl("/cameras");
+      console.log("Single Camera")
+      break;
+      case "Record Cams":
+      this.router.navigateByUrl("/record");
+      console.log("Record Cams")
+      break;
+      case "Cam DVR":
+      this.router.navigateByUrl("/record");
+      console.log("Cam DVR")
+      break;
     }
   }
 
