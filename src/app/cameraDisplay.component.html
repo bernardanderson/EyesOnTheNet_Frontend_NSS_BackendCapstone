@@ -27,7 +27,7 @@
     <div [ngSwitch]="currentView">
 
       <!-- The View for multiple Cameras -->
-      <div *ngSwitchCase="'multiView'">
+      <div *ngSwitchCase="'multicamera'">
         <div class="ui two column grid">
           <div class="column" *ngFor="let camera of viewingCameras">
               <div class="ui segment" (click)="camPicMenu($event, camera)">
@@ -57,7 +57,7 @@
       </div>
       
       <!--The view for a single camera-->
-    <div *ngSwitchCase="'singleCamera'">
+    <div *ngSwitchCase="'singlecamera'">
       <div class="ui one column grid" *ngFor="let oneSingleCamera of currentSingleCamera">
         <div class="ui column">
           <div class="ui two column grid">

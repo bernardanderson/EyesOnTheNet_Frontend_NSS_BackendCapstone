@@ -4,11 +4,11 @@
     <div *ngIf="menuActive" (click)="userMenuSelection($event)">
       <div class="ui secondary pointing menu">
         <div class="left menu">
-          <a [ngClass]="{active: menuItem==='Multi-Camera'}" class="ui item">
+          <a [ngClass]="{active: router.url==='/multicamera'}" class="ui item">
             <i class="large grid layout icon icon"></i>
             Multi-Camera
           </a>
-          <a [ngClass]="{active: menuItem==='Single Camera'}" class="ui item">
+          <a [ngClass]="{active: router.url==='/singlecamera'}" class="ui item">
             <i class="large icons">
               <i class="square icon"></i>
               <i class="corner map outline icon"></i>
@@ -16,24 +16,24 @@
             Single Camera
           </a>
         </div>
-        <a [ngClass]="{active: menuItem==='Record Cams'}" class="ui item">
+        <a [ngClass]="{active: router.url==='/record'}" class="ui item">
           <i class="record icon"></i>
             Record Cams
         </a>
-        <a [ngClass]="{active: menuItem==='Cam DVR'}" class="ui item">
+        <a [ngClass]="{active: router.url==='/camdvr'}" class="ui item">
           <i class="film icon"></i>
             Cam DVR
           </a>
 
         <div class="right menu">
-              <a class="ui item" *ngIf="router.url === '/cameras'">
+              <a class="ui item" *ngIf="router.url==='/multicamera' || router.url==='/singlecamera'">
                 <i class=" large icons">
                   <i class="camera retro icon"></i>
                   <i class="corner add icon"></i>
                 </i>
                 Add Camera
               </a>
-              <div class="ui disabled item" *ngIf="router.url !== '/cameras'">
+              <div class="ui disabled item" *ngIf="router.url!=='/multicamera' && router.url!=='/singlecamera'">
                 <i class=" large icons">
                   <i class="camera retro icon"></i>
                   <i class="corner add icon"></i>

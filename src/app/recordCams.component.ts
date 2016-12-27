@@ -20,9 +20,10 @@ declare var $: any;
 
 export class RecordCamsComponent implements OnInit, OnDestroy {  
 
-// Properties    
-    subscription: Subscription;            // Needed for menu communication
+// Properties
 
+    router: Router;                
+    subscription: Subscription;    // Needed for menu communication
     currentView: string = "";      // Used to control the 'child view' of the camera window (Multi or Single)
 
     ngOnInit() {
@@ -35,15 +36,14 @@ export class RecordCamsComponent implements OnInit, OnDestroy {
     }
 
     // The formatted constructor receives the menu information when changed in parent
-    constructor(private menuService: MenuService, private httpRequestService: HttpRequestService) {  
+    constructor(private menuService: MenuService, private httpRequestService: HttpRequestService, router: Router) {  
+        this.router = router;
+        this.currentView = this.router.url.substring(1);
         this.subscription = menuService.selectedMenuItem$.subscribe(
         menuItem => {
-            if (menuItem === "Add Camera"){
-            }
             if (menuItem === "Record Cams") {
-                this.currentView = "recordcams";
-            }
-            if (menuItem === "Cam DVR") {
+                this.currentView = "record";
+            } else if (menuItem === "Cam DVR") {
                 this.currentView = "camdvr";
             }
         });
