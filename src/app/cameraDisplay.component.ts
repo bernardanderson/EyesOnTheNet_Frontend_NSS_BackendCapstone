@@ -36,6 +36,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     @Input() selectedMenu:string;                           
     
 // Properties    
+    router: Router;
     subscription: Subscription;            // Needed for menu communication
     refreshinterval: number = 5000;        // For cam images refresh
     userCameraList: {
@@ -44,7 +45,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
       location: string
     }[] = [];                              // Array of Possible User Cameras
 
-    currentView: string = "multiView";      // Used to control the 'child view' of the camera window (Multi or Single)
+    currentView: string = "";      // Used to control the 'child view' of the camera window (Multi or Single)
 
     addEditCameraError = {
         hasError: false,
@@ -101,7 +102,9 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     }
 
     // The formatted constructor receives the menu information when changed in parent
-    constructor(private menuService: MenuService, private httpRequestService: HttpRequestService) {  
+    constructor(private menuService: MenuService, private httpRequestService: HttpRequestService, router: Router) {  
+        this.router = router;
+        this.currentView = this.router.url.substring(1);
         this.subscription = menuService.selectedMenuItem$.subscribe(
         menuItem => {
             if (menuItem === "Add Camera"){
@@ -109,10 +112,10 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
                 this.initAddEditModal();
             }
             if (menuItem === "Multi-Camera") {
-                this.currentView = "multiView";
+                this.currentView = "multicamera";
             }
             if (menuItem === "Single Camera") {
-                this.currentView = "singleCamera";
+                this.currentView = "singlecamera";
             }
         });
     }
@@ -140,7 +143,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     // When a user selects a camera for viewing it gets added to the viewArray.
     //  If it's already being viewed, the IMG src string gets updated instead.
     addCamerasToView(sentCamera): boolean {
-        if (this.currentView === "singleCamera") {
+        if (this.currentView === "singlecamera") {
             this.singleCameraView(sentCamera);
             return true;
         } else {
@@ -175,7 +178,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
 
     // This refreshes the viewing camera URLs
     refreshCamViewImages() {
-        if (this.currentView === "singleCamera") {
+        if (this.currentView === "singlecamera") {
             let tempUrlString = this.currentSingleCamera[0].cameraURL;
             tempUrlString = tempUrlString.slice(0, tempUrlString.indexOf("?"));
             this.currentSingleCamera[0].cameraURL = `${tempUrlString}?${new Date().getTime()}`;
@@ -203,14 +206,14 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
                 this.editSingleCamera(sentCamera);
                 break;
             case "Close": 
-                if (this.currentView === "singleCamera") {
+                if (this.currentView === "singlecamera") {
                     this.currentSingleCamera.pop();
                 } else {
                     this.viewingCameras.splice(this.viewingCameras.indexOf(sentCamera), 1);
                 }
                 break;
             case "Refresh":
-                if (this.currentView === "singleCamera") {
+                if (this.currentView === "singlecamera") {
                     this.refreshCamViewImages();
                 } else {
                     this.addCamerasToView(sentCamera);
@@ -223,7 +226,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
 
     // Code for the Single Camera View
     singleCameraView(sentCamera) {
-        this.currentView = "singleCamera";
+        this.currentView = "singlecamera";
         
         let tempSingleCamera = JSON.parse(JSON.stringify(sentCamera));
         tempSingleCamera.cameraURL =`http://${GlobalVariables.serverIP}/api/camera/${tempSingleCamera.cameraIdHash}/snapshot?${new Date().getTime()}`;

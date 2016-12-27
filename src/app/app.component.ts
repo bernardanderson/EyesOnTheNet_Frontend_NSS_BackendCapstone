@@ -14,7 +14,7 @@ declare var $: any;
 export class AppComponent {
 
   router: Router;
-  menuItem: string = "Multi-Camera";
+  menuItem: string = "";
   menuActive: boolean = false;
 
   // Sets up the router and menuService to watch clicks to the menu
@@ -39,8 +39,24 @@ export class AppComponent {
     this.menuService.annouceMenuItem(this.menuItem);
 
     // When the user clicks the Logout button
-    if (this.menuItem === "Logout") {
+    switch (this.menuItem) {
+      case "Logout": 
       this.userLogout();
+      break;
+      case "Add Camera":
+      break;
+      case "Multi-Camera":
+      this.router.navigateByUrl("/multicamera");
+      break;
+      case "Single Camera":
+      this.router.navigateByUrl("/singlecamera");
+      break;
+      case "Record Cams":
+      this.router.navigateByUrl("/record");
+      break;
+      case "Cam DVR":
+      this.router.navigateByUrl("/camdvr");
+      break;
     }
   }
 
