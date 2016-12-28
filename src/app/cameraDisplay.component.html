@@ -7,15 +7,25 @@
           <i class="search icon"></i>
         </div>
       </div>
+
       <div class="item">
-        <div class="ui button fluid" (click)="refreshTimer()">
+
+        <div class="ui button fluid" *ngIf="router.url!=='/record'" (click)="refreshTimer()">
           <i class="wait icon"></i>
             Refresh All: {{refreshTimerOptions[0].message}}
         </div>
+
+        <div class="ui button disabled fluid" *ngIf="router.url==='/record'">
+          <i class="wait icon"></i>
+            Refresh Disabled
+        </div>
+
+
         <h5 class="ui tiny grey center aligned header">
           Available Cameras
         </h5>
       </div>
+
       <a class="item" *ngFor="let camera of (userCameraList | cameraSearchPipe:cameraTerm.value)" (click)="addCamerasToView(camera)">
         <h4 class="ui header centered">{{camera.name}}</h4>
       </a>
@@ -117,8 +127,15 @@
 
     <!--The view for the record camera-->
     <div *ngSwitchCase="'/record'">
-      <h2>Record a Camera</h2>
+        <div class="ui info message" *ngIf="recordingCameras.length === 0 ">
+          <div class="header">
+            Select Cameras from the Left Menu to Record Their Feeds 
+          </div>
+        </div>
+      <div *ngFor="let oneRecordingCamera of recordingCameras">
+        <div>{{oneRecordingCamera.name}}</div>
     </div>
+
   </div>
 
 <!--Start Add/Edit Camera modal-->

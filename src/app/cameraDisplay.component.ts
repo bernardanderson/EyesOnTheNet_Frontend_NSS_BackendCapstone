@@ -89,6 +89,13 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         googleMapURL: string
     } [] = [];
 
+    recordingCameras: {                // Array of which cameras are currently being recorded
+        cameraIdHash: number,
+        cameraURL: string,
+        name: string,
+        location: string
+    } [] = [];
+
     ngOnInit() {
         this.menuService.activateMenu(true);    // Shows the nav-menu on page load
         this.getCameraList();                   // Pulls the users cameras on page load
@@ -147,6 +154,8 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
             }
             this.viewingCameras.push(sentCamera);
             return true;
+        } else if (this.router.url === "/record") {
+            this.singleRecordingCamera(sentCamera);
         }
     }
 
@@ -344,4 +353,15 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
                 };
             })
     }
+
+    singleRecordingCamera(sentCamera) {
+        for (let i=0; i < this.recordingCameras.length; i++) {
+            if (this.recordingCameras[i].cameraIdHash === sentCamera.cameraIdHash) {
+                return true;
+            }
+        }
+        this.recordingCameras.push(sentCamera);
+    }
+
+
 }
