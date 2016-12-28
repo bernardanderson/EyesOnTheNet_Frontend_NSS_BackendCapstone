@@ -51,7 +51,7 @@ export class AppComponent {
       case "Single Camera":
       this.router.navigateByUrl("/singlecamera");
       break;
-      case "Record Cams":
+      case "Record Feeds":
       this.router.navigateByUrl("/record");
       break;
       case "Cam DVR":

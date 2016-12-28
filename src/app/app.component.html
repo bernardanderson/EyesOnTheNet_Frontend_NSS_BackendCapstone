@@ -9,31 +9,29 @@
             Multi-Camera
           </a>
           <a [ngClass]="{active: router.url==='/singlecamera'}" class="ui item">
-            <i class="large icons">
-              <i class="square icon"></i>
-              <i class="corner map outline icon"></i>
-            </i>
+            <i class="square icon"></i>
             Single Camera
           </a>
+          <a [ngClass]="{active: router.url==='/record'}" class="ui item">
+            <i class="record icon"></i>
+              Record Feeds
+          </a>
         </div>
-        <a [ngClass]="{active: router.url==='/record'}" class="ui item">
-          <i class="record icon"></i>
-            Record Cams
-        </a>
+
         <a [ngClass]="{active: router.url==='/camdvr'}" class="ui item">
           <i class="film icon"></i>
             Cam DVR
-          </a>
+        </a>
 
         <div class="right menu">
-              <a class="ui item" *ngIf="router.url==='/multicamera' || router.url==='/singlecamera'">
+              <a class="ui item" *ngIf="router.url!=='/camdvr'">
                 <i class=" large icons">
                   <i class="camera retro icon"></i>
                   <i class="corner add icon"></i>
                 </i>
                 Add Camera
               </a>
-              <div class="ui disabled item" *ngIf="router.url!=='/multicamera' && router.url!=='/singlecamera'">
+              <div class="ui disabled item" *ngIf="router.url==='/camdvr'">
                 <i class=" large icons">
                   <i class="camera retro icon"></i>
                   <i class="corner add icon"></i>

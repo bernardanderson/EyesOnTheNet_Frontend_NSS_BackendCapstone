@@ -56,7 +56,7 @@
         </div>
       </div>
       
-      <!--The view for a single camera-->
+    <!--The view for a single camera-->
     <div *ngSwitchCase="'/singlecamera'">
       <div class="ui one column grid" *ngFor="let oneSingleCamera of currentSingleCamera">
         <div class="ui column">
@@ -114,8 +114,12 @@
         </div>
       </div>
     </div>
-  </div>
 
+    <!--The view for the record camera-->
+    <div *ngSwitchCase="'/record'">
+      <h2>Record a Camera</h2>
+    </div>
+  </div>
 
 <!--Start Add/Edit Camera modal-->
 

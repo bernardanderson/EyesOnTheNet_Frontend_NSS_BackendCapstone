@@ -8,7 +8,7 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login.component';
 import { RegisterComponent }  from './register.component';
 import { CameraDisplayComponent }  from './cameraDisplay.component';
-import { RecordCamsComponent } from './recordCams.component';
+import { DVRComponent } from './DVR.component';
 import { CameraSearchPipe } from './camerasearch.pipe';
 import { HttpRequestService } from './httprequest.service';           // Houses all the Get/Post Request Methods
 
@@ -20,7 +20,7 @@ import { HttpRequestService } from './httprequest.service';           // Houses 
     RegisterComponent,
     CameraDisplayComponent,
     CameraSearchPipe,
-    RecordCamsComponent
+    DVRComponent
   ],
   imports: [
     BrowserModule,
@@ -31,8 +31,8 @@ import { HttpRequestService } from './httprequest.service';           // Houses 
       { path: 'register', component: RegisterComponent },
       { path: 'multicamera', component: CameraDisplayComponent },
       { path: 'singlecamera', component: CameraDisplayComponent },
-      { path: 'record', component: RecordCamsComponent },
-      { path: 'camdvr', component: RecordCamsComponent },
+      { path: 'record', component: CameraDisplayComponent },
+      { path: 'camdvr', component: DVRComponent },
       { path: '**', redirectTo: ''}
     ])
   ],
