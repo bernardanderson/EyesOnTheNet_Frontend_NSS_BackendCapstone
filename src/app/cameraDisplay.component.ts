@@ -45,8 +45,6 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
       location: string
     }[] = [];                              // Array of Possible User Cameras
 
-    currentView: string = "";      // Used to control the 'child view' of the camera window (Multi or Single)
-
     addEditCameraError = {
         hasError: false,
         message: ""
@@ -104,18 +102,11 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     // The formatted constructor receives the menu information when changed in parent
     constructor(private menuService: MenuService, private httpRequestService: HttpRequestService, router: Router) {  
         this.router = router;
-        this.currentView = this.router.url.substring(1);
         this.subscription = menuService.selectedMenuItem$.subscribe(
         menuItem => {
             if (menuItem === "Add Camera"){
                 this.resetAddEditCameraObject();
                 this.initAddEditModal();
-            }
-            if (menuItem === "Multi-Camera") {
-                this.currentView = "multicamera";
-            }
-            if (menuItem === "Single Camera") {
-                this.currentView = "singlecamera";
             }
         });
     }
@@ -143,10 +134,10 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     // When a user selects a camera for viewing it gets added to the viewArray.
     //  If it's already being viewed, the IMG src string gets updated instead.
     addCamerasToView(sentCamera): boolean {
-        if (this.currentView === "singlecamera") {
+        if (this.router.url === "/singlecamera") {
             this.singleCameraView(sentCamera);
             return true;
-        } else {
+        } else if (this.router.url === "/multicamera") {
             sentCamera.cameraURL =`http://${GlobalVariables.serverIP}/api/camera/${sentCamera.cameraIdHash}/snapshot?${new Date().getTime()}`;
             for (let i = 0; i < this.viewingCameras.length; i++) {
                 if (sentCamera.cameraIdHash === this.viewingCameras[i].cameraIdHash) {
@@ -178,11 +169,11 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
 
     // This refreshes the viewing camera URLs
     refreshCamViewImages() {
-        if (this.currentView === "singlecamera") {
+        if (this.router.url === "/singlecamera") {
             let tempUrlString = this.currentSingleCamera[0].cameraURL;
             tempUrlString = tempUrlString.slice(0, tempUrlString.indexOf("?"));
             this.currentSingleCamera[0].cameraURL = `${tempUrlString}?${new Date().getTime()}`;
-        } else {
+        } else if (this.router.url === "/multicamera") {
             for(let i = 0; i < this.viewingCameras.length; i++) {
                 let tempUrlString = this.viewingCameras[i].cameraURL;
                 tempUrlString = tempUrlString.slice(0, tempUrlString.indexOf("?"));
@@ -206,16 +197,16 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
                 this.editSingleCamera(sentCamera);
                 break;
             case "Close": 
-                if (this.currentView === "singlecamera") {
+                if (this.router.url === "/singlecamera") {
                     this.currentSingleCamera.pop();
-                } else {
+                } else if (this.router.url === "/multicamera") {
                     this.viewingCameras.splice(this.viewingCameras.indexOf(sentCamera), 1);
                 }
                 break;
             case "Refresh":
-                if (this.currentView === "singlecamera") {
+                if (this.router.url === "/singlecamera") {
                     this.refreshCamViewImages();
-                } else {
+                } else if (this.router.url === "/multicamera") {
                     this.addCamerasToView(sentCamera);
                 }
                 break;
@@ -226,8 +217,6 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
 
     // Code for the Single Camera View
     singleCameraView(sentCamera) {
-        this.currentView = "singlecamera";
-        
         let tempSingleCamera = JSON.parse(JSON.stringify(sentCamera));
         tempSingleCamera.cameraURL =`http://${GlobalVariables.serverIP}/api/camera/${tempSingleCamera.cameraIdHash}/snapshot?${new Date().getTime()}`;
         
