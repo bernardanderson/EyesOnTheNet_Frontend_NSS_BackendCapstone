@@ -237,6 +237,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
 
         this.currentSingleCamera.splice(0, 1);
         this.currentSingleCamera.push(tempSingleCamera);
+        this.router.navigateByUrl("/camera/singlecamera");
     }
 
     // Zooms the GoogleMap In and Out
@@ -357,8 +358,11 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     }
 
     singleRecordingCamera(sentCamera) {
+
+        sentCamera.cameraURL =`http://${GlobalVariables.serverIP}/api/camera/${sentCamera.cameraIdHash}/snapshot?${new Date().getTime()}`;
         for (let i=0; i < this.recordingCameras.length; i++) {
             if (this.recordingCameras[i].cameraIdHash === sentCamera.cameraIdHash) {
+                this.recordingCameras.splice(this.recordingCameras.indexOf(sentCamera), 1);
                 return true;
             }
         }

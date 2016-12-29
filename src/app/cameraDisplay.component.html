@@ -127,16 +127,48 @@
 
     <!--The view for the record camera-->
     <div *ngSwitchCase="'/camera/record'">
-        <div class="ui info message" *ngIf="recordingCameras.length === 0 ">
+      <div *ngIf="recordingCameras.length === 0">
+        <div class="ui info message">
           <div class="header">
             Select Cameras from the Left Menu to Record Their Feeds 
           </div>
         </div>
-      <div *ngFor="let oneRecordingCamera of recordingCameras">
-        <div>{{oneRecordingCamera.name}}</div>
-    </div>
+      </div>
 
-  </div>
+      <table class="ui celled table" *ngIf="recordingCameras.length !== 0">
+        <thead>
+          <tr>
+            <th class="ui center aligned">Cam #</th>
+            <th class="ui center aligned">Camera Name</th>
+            <th class="ui center aligned">Thumbnail</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let oneRecordingCamera of recordingCameras; let i = index">
+            <td class="ui center aligned">{{i + 1}}</td>
+            <td class="ui center aligned">{{oneRecordingCamera.name}}</td>
+            <td><img class="ui rounded image small centered" [src]="oneRecordingCamera.cameraURL"/></td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th></th>
+            <th>
+              <div class="ui right floated right labeled fluid input">
+                <input type="text" placeholder="Record Frequency (5s or greater)">
+                <div class="ui basic label">
+                  sec per capture
+                </div>
+              </div>
+            </th>
+            <th class="ui center aligned">
+              <div class="ui blue button">Update Recording Cameras</div>
+            </th>
+          </tr>
+        </tfoot>
+      </table>
+
+    </div>
 
 <!--Start Add/Edit Camera modal-->
 
