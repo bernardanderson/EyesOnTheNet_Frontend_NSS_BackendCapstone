@@ -29,9 +29,8 @@ import { HttpRequestService } from './httprequest.service';           // Houses 
     RouterModule.forRoot([
       { path: '', pathMatch: 'full', component: LoginComponent },
       { path: 'register', component: RegisterComponent },
-      { path: 'multicamera', component: CameraDisplayComponent },
-      { path: 'singlecamera', component: CameraDisplayComponent },
-      { path: 'record', component: CameraDisplayComponent },
+      { path: 'camera', redirectTo: 'camera/multicamera' },
+      { path: 'camera/:id', component: CameraDisplayComponent },
       { path: 'camdvr', component: DVRComponent },
       { path: '**', redirectTo: ''}
     ])

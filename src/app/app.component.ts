@@ -46,13 +46,13 @@ export class AppComponent {
       case "Add Camera":
       break;
       case "Multi-Camera":
-      this.router.navigateByUrl("/multicamera");
+      this.router.navigateByUrl("/camera/multicamera");
       break;
       case "Single Camera":
-      this.router.navigateByUrl("/singlecamera");
+      this.router.navigateByUrl("/camera/singlecamera");
       break;
       case "Record Feeds":
-      this.router.navigateByUrl("/record");
+      this.router.navigateByUrl("/camera/record");
       break;
       case "Cam DVR":
       this.router.navigateByUrl("/camdvr");

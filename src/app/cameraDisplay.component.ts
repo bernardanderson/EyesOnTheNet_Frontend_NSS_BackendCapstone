@@ -99,6 +99,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.menuService.activateMenu(true);    // Shows the nav-menu on page load
         this.getCameraList();                   // Pulls the users cameras on page load
+        console.log("OnInit has run.")
     }
 
     // Prevents memory leakage when this view is destroyed
@@ -116,6 +117,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
                 this.initAddEditModal();
             }
         });
+        console.log("Constructor has run.");
     }
 
     // Gets the list of user cameras and populates the Camera MENU Cards
@@ -141,10 +143,10 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     // When a user selects a camera for viewing it gets added to the viewArray.
     //  If it's already being viewed, the IMG src string gets updated instead.
     addCamerasToView(sentCamera): boolean {
-        if (this.router.url === "/singlecamera") {
+        if (this.router.url === "/camera/singlecamera") {
             this.singleCameraView(sentCamera);
             return true;
-        } else if (this.router.url === "/multicamera") {
+        } else if (this.router.url === "/camera/multicamera") {
             sentCamera.cameraURL =`http://${GlobalVariables.serverIP}/api/camera/${sentCamera.cameraIdHash}/snapshot?${new Date().getTime()}`;
             for (let i = 0; i < this.viewingCameras.length; i++) {
                 if (sentCamera.cameraIdHash === this.viewingCameras[i].cameraIdHash) {
@@ -154,7 +156,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
             }
             this.viewingCameras.push(sentCamera);
             return true;
-        } else if (this.router.url === "/record") {
+        } else if (this.router.url === "/camera/record") {
             this.singleRecordingCamera(sentCamera);
         }
     }
@@ -178,11 +180,11 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
 
     // This refreshes the viewing camera URLs
     refreshCamViewImages() {
-        if (this.router.url === "/singlecamera") {
+        if (this.router.url === "/camera/singlecamera") {
             let tempUrlString = this.currentSingleCamera[0].cameraURL;
             tempUrlString = tempUrlString.slice(0, tempUrlString.indexOf("?"));
             this.currentSingleCamera[0].cameraURL = `${tempUrlString}?${new Date().getTime()}`;
-        } else if (this.router.url === "/multicamera") {
+        } else if (this.router.url === "/camera/multicamera") {
             for(let i = 0; i < this.viewingCameras.length; i++) {
                 let tempUrlString = this.viewingCameras[i].cameraURL;
                 tempUrlString = tempUrlString.slice(0, tempUrlString.indexOf("?"));
@@ -206,16 +208,16 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
                 this.editSingleCamera(sentCamera);
                 break;
             case "Close": 
-                if (this.router.url === "/singlecamera") {
+                if (this.router.url === "/camera/singlecamera") {
                     this.currentSingleCamera.pop();
-                } else if (this.router.url === "/multicamera") {
+                } else if (this.router.url === "/camera/multicamera") {
                     this.viewingCameras.splice(this.viewingCameras.indexOf(sentCamera), 1);
                 }
                 break;
             case "Refresh":
-                if (this.router.url === "/singlecamera") {
+                if (this.router.url === "/camera/singlecamera") {
                     this.refreshCamViewImages();
-                } else if (this.router.url === "/multicamera") {
+                } else if (this.router.url === "/camera/multicamera") {
                     this.addCamerasToView(sentCamera);
                 }
                 break;

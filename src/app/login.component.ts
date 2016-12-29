@@ -29,7 +29,7 @@ export class LoginComponent {
   // Checks for the presence of the JWT key and if so skips the login.
   ngOnInit() {
     if (document.cookie.indexOf("access_token") !== -1) {
-      this.router.navigateByUrl("/multicamera");
+      this.router.navigateByUrl("/camera/multicamera");
     }
   }
 
@@ -46,7 +46,7 @@ export class LoginComponent {
     this.httpRequestService.postAccess(httpRequestConf).subscribe(
       data => {
         this.cookieBuilder(data); // Builds the JWT cookie
-        this.router.navigateByUrl("/multicamera");
+        this.router.navigateByUrl("/camera/multicamera");
       },
       err => {
         this.loginError.currentCount++; 

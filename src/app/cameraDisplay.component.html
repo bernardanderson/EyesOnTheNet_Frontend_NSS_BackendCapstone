@@ -10,12 +10,12 @@
 
       <div class="item">
 
-        <div class="ui button fluid" *ngIf="router.url!=='/record'" (click)="refreshTimer()">
+        <div class="ui button fluid" *ngIf="router.url!=='/camera/record'" (click)="refreshTimer()">
           <i class="wait icon"></i>
             Refresh All: {{refreshTimerOptions[0].message}}
         </div>
 
-        <div class="ui button disabled fluid" *ngIf="router.url==='/record'">
+        <div class="ui button disabled fluid" *ngIf="router.url==='/camera/record'">
           <i class="wait icon"></i>
             Refresh Disabled
         </div>
@@ -37,7 +37,7 @@
     <div [ngSwitch]="router.url">
 
       <!-- The View for multiple Cameras -->
-      <div *ngSwitchCase="'/multicamera'">
+      <div *ngSwitchCase="'/camera/multicamera'">
         <div class="ui two column grid">
           <div class="column" *ngFor="let camera of viewingCameras">
               <div class="ui segment" (click)="camPicMenu($event, camera)">
@@ -67,7 +67,7 @@
       </div>
       
     <!--The view for a single camera-->
-    <div *ngSwitchCase="'/singlecamera'">
+    <div *ngSwitchCase="'/camera/singlecamera'">
       <div class="ui one column grid" *ngFor="let oneSingleCamera of currentSingleCamera">
         <div class="ui column">
           <div class="ui two column grid">
@@ -126,7 +126,7 @@
     </div>
 
     <!--The view for the record camera-->
-    <div *ngSwitchCase="'/record'">
+    <div *ngSwitchCase="'/camera/record'">
         <div class="ui info message" *ngIf="recordingCameras.length === 0 ">
           <div class="header">
             Select Cameras from the Left Menu to Record Their Feeds 
