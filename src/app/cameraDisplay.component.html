@@ -135,8 +135,11 @@
         </div>
       </div>
 
-      <table class="ui celled table" *ngIf="recordingCameras.length !== 0">
+      <table class="ui celled striped table" *ngIf="recordingCameras.length !== 0">
         <thead>
+          <tr> 
+            <th class="ui header" colspan="3">Cam Feeds Recorded</th>
+          </tr>
           <tr>
             <th class="ui center aligned">Cam #</th>
             <th class="ui center aligned">Camera Name</th>
@@ -155,14 +158,14 @@
             <th></th>
             <th>
               <div class="ui right floated right labeled fluid input">
-                <input type="text" placeholder="Record Frequency (5s or greater)">
+                <input type="text" #delayTime placeholder="Record Frequency (5s or greater)">
                 <div class="ui basic label">
                   sec per capture
                 </div>
               </div>
             </th>
             <th class="ui center aligned">
-              <div class="ui blue button">Update Recording Cameras</div>
+              <div class="ui blue button" (click)="recordCamerasTimer(delayTime.value)">Update Recording Cameras</div>
             </th>
           </tr>
         </tfoot>

@@ -61,7 +61,9 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         location: "",
     };          // For adding or editing a camera parameters
 
-    refreshTimerClock: Subscription;       // For timer subscription
+    refreshTimerClock: Subscription;       // For refresh timer subscription
+ 
+    captureCamFeedClock: Subscription;       // For Cam Picture Capture subscription
 
     refreshTimerOptions: {                 // Time options for the refreshes (in seconds)
             message: string,
@@ -157,7 +159,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
             this.viewingCameras.push(sentCamera);
             return true;
         } else if (this.router.url === "/camera/record") {
-            this.singleRecordingCamera(sentCamera);
+            this.singleCameraToRecordingCamerasArray(sentCamera);
         }
     }
 
@@ -357,8 +359,8 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
             })
     }
 
-    singleRecordingCamera(sentCamera) {
-
+    // Adds or removes a single camera to/from the RecordingCameras Array
+    singleCameraToRecordingCamerasArray(sentCamera) {
         sentCamera.cameraURL =`http://${GlobalVariables.serverIP}/api/camera/${sentCamera.cameraIdHash}/snapshot?${new Date().getTime()}`;
         for (let i=0; i < this.recordingCameras.length; i++) {
             if (this.recordingCameras[i].cameraIdHash === sentCamera.cameraIdHash) {
@@ -369,5 +371,28 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         this.recordingCameras.push(sentCamera);
     }
 
+    // Has the backend take and store a snapshot of the 
+    recordCamerasTimer(sentRecordDelay) {
 
+        if (this.captureCamFeedClock !== undefined) {
+            this.captureCamFeedClock.unsubscribe();
+        }
+
+        if (sentRecordDelay > 4 && this.recordingCameras.length > 0) {
+            this.captureCamFeedClock = IntervalObservable.create(sentRecordDelay*1000).subscribe(timeKeeper => {
+                this.recordCameras();
+            });
+        }
+    }
+
+    recordCameras() {
+        //console.log(this.recordingCameras);
+        //console.log("Cameras Recorded");
+        for (let i = 0; i < this.recordingCameras.length; i++) {
+            this.httpRequestService.getAccess(`api/file/${this.recordingCameras[i].cameraIdHash}`)
+            .subscribe(
+                data => { console.log("Success", data) },
+                err => { console.log("Fail", err); })
+            }
+    }
 }
