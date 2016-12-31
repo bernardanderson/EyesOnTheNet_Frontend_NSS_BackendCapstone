@@ -13,18 +13,17 @@ import { GlobalVariables } from './global';
 declare var $: any;
 
 @Component({
-    selector: 'recordcams-view', 
-    templateUrl: 'recordCams.component.html',
-    styleUrls: ['recordCams.component.css']
+    selector: 'dvr-view', 
+    templateUrl: 'DVR.component.html',
+    styleUrls: ['DVR.component.css']
 })
 
-export class RecordCamsComponent implements OnInit, OnDestroy {  
+export class DVRComponent implements OnInit, OnDestroy {  
 
 // Properties
 
     router: Router;                
     subscription: Subscription;    // Needed for menu communication
-    currentView: string = "";      // Used to control the 'child view' of the camera window (Multi or Single)
 
     ngOnInit() {
         this.menuService.activateMenu(true);    // Shows the nav-menu on page load
@@ -38,15 +37,8 @@ export class RecordCamsComponent implements OnInit, OnDestroy {
     // The formatted constructor receives the menu information when changed in parent
     constructor(private menuService: MenuService, private httpRequestService: HttpRequestService, router: Router) {  
         this.router = router;
-        this.currentView = this.router.url.substring(1);
         this.subscription = menuService.selectedMenuItem$.subscribe(
         menuItem => {
-            if (menuItem === "Record Cams") {
-                this.currentView = "record";
-            } else if (menuItem === "Cam DVR") {
-                this.currentView = "camdvr";
-            }
         });
     }
-
 }

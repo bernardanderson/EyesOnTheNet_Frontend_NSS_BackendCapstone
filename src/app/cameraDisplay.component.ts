@@ -45,8 +45,6 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
       location: string
     }[] = [];                              // Array of Possible User Cameras
 
-    currentView: string = "";      // Used to control the 'child view' of the camera window (Multi or Single)
-
     addEditCameraError = {
         hasError: false,
         message: ""
@@ -63,7 +61,9 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         location: "",
     };          // For adding or editing a camera parameters
 
-    refreshTimerClock: Subscription;       // For timer subscription
+    refreshTimerClock: Subscription;       // For refresh timer subscription
+ 
+    captureCamFeedClock: Subscription;       // For Cam Picture Capture subscription
 
     refreshTimerOptions: {                 // Time options for the refreshes (in seconds)
             message: string,
@@ -91,9 +91,17 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         googleMapURL: string
     } [] = [];
 
+    recordingCameras: {                // Array of which cameras are currently being recorded
+        cameraIdHash: number,
+        cameraURL: string,
+        name: string,
+        location: string
+    } [] = [];
+
     ngOnInit() {
         this.menuService.activateMenu(true);    // Shows the nav-menu on page load
         this.getCameraList();                   // Pulls the users cameras on page load
+        console.log("OnInit has run.")
     }
 
     // Prevents memory leakage when this view is destroyed
@@ -104,20 +112,14 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     // The formatted constructor receives the menu information when changed in parent
     constructor(private menuService: MenuService, private httpRequestService: HttpRequestService, router: Router) {  
         this.router = router;
-        this.currentView = this.router.url.substring(1);
         this.subscription = menuService.selectedMenuItem$.subscribe(
         menuItem => {
             if (menuItem === "Add Camera"){
                 this.resetAddEditCameraObject();
                 this.initAddEditModal();
             }
-            if (menuItem === "Multi-Camera") {
-                this.currentView = "multicamera";
-            }
-            if (menuItem === "Single Camera") {
-                this.currentView = "singlecamera";
-            }
         });
+        console.log("Constructor has run.");
     }
 
     // Gets the list of user cameras and populates the Camera MENU Cards
@@ -143,10 +145,10 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     // When a user selects a camera for viewing it gets added to the viewArray.
     //  If it's already being viewed, the IMG src string gets updated instead.
     addCamerasToView(sentCamera): boolean {
-        if (this.currentView === "singlecamera") {
+        if (this.router.url === "/camera/singlecamera") {
             this.singleCameraView(sentCamera);
             return true;
-        } else {
+        } else if (this.router.url === "/camera/multicamera") {
             sentCamera.cameraURL =`http://${GlobalVariables.serverIP}/api/camera/${sentCamera.cameraIdHash}/snapshot?${new Date().getTime()}`;
             for (let i = 0; i < this.viewingCameras.length; i++) {
                 if (sentCamera.cameraIdHash === this.viewingCameras[i].cameraIdHash) {
@@ -156,6 +158,8 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
             }
             this.viewingCameras.push(sentCamera);
             return true;
+        } else if (this.router.url === "/camera/record") {
+            this.singleCameraToRecordingCamerasArray(sentCamera);
         }
     }
 
@@ -178,11 +182,11 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
 
     // This refreshes the viewing camera URLs
     refreshCamViewImages() {
-        if (this.currentView === "singlecamera") {
+        if (this.router.url === "/camera/singlecamera") {
             let tempUrlString = this.currentSingleCamera[0].cameraURL;
             tempUrlString = tempUrlString.slice(0, tempUrlString.indexOf("?"));
             this.currentSingleCamera[0].cameraURL = `${tempUrlString}?${new Date().getTime()}`;
-        } else {
+        } else if (this.router.url === "/camera/multicamera") {
             for(let i = 0; i < this.viewingCameras.length; i++) {
                 let tempUrlString = this.viewingCameras[i].cameraURL;
                 tempUrlString = tempUrlString.slice(0, tempUrlString.indexOf("?"));
@@ -206,16 +210,16 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
                 this.editSingleCamera(sentCamera);
                 break;
             case "Close": 
-                if (this.currentView === "singlecamera") {
+                if (this.router.url === "/camera/singlecamera") {
                     this.currentSingleCamera.pop();
-                } else {
+                } else if (this.router.url === "/camera/multicamera") {
                     this.viewingCameras.splice(this.viewingCameras.indexOf(sentCamera), 1);
                 }
                 break;
             case "Refresh":
-                if (this.currentView === "singlecamera") {
+                if (this.router.url === "/camera/singlecamera") {
                     this.refreshCamViewImages();
-                } else {
+                } else if (this.router.url === "/camera/multicamera") {
                     this.addCamerasToView(sentCamera);
                 }
                 break;
@@ -226,8 +230,6 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
 
     // Code for the Single Camera View
     singleCameraView(sentCamera) {
-        this.currentView = "singlecamera";
-        
         let tempSingleCamera = JSON.parse(JSON.stringify(sentCamera));
         tempSingleCamera.cameraURL =`http://${GlobalVariables.serverIP}/api/camera/${tempSingleCamera.cameraIdHash}/snapshot?${new Date().getTime()}`;
         
@@ -237,6 +239,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
 
         this.currentSingleCamera.splice(0, 1);
         this.currentSingleCamera.push(tempSingleCamera);
+        this.router.navigateByUrl("/camera/singlecamera");
     }
 
     // Zooms the GoogleMap In and Out
@@ -354,5 +357,42 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
                     message: "Camera Delete Failed"
                 };
             })
+    }
+
+    // Adds or removes a single camera to/from the RecordingCameras Array
+    singleCameraToRecordingCamerasArray(sentCamera) {
+        sentCamera.cameraURL =`http://${GlobalVariables.serverIP}/api/camera/${sentCamera.cameraIdHash}/snapshot?${new Date().getTime()}`;
+        for (let i=0; i < this.recordingCameras.length; i++) {
+            if (this.recordingCameras[i].cameraIdHash === sentCamera.cameraIdHash) {
+                this.recordingCameras.splice(this.recordingCameras.indexOf(sentCamera), 1);
+                return true;
+            }
+        }
+        this.recordingCameras.push(sentCamera);
+    }
+
+    // Has the backend take and store a snapshot of the 
+    recordCamerasTimer(sentRecordDelay) {
+
+        if (this.captureCamFeedClock !== undefined) {
+            this.captureCamFeedClock.unsubscribe();
+        }
+
+        if (sentRecordDelay > 4 && this.recordingCameras.length > 0) {
+            this.captureCamFeedClock = IntervalObservable.create(sentRecordDelay*1000).subscribe(timeKeeper => {
+                this.recordCameras();
+            });
+        }
+    }
+
+    recordCameras() {
+        //console.log(this.recordingCameras);
+        //console.log("Cameras Recorded");
+        for (let i = 0; i < this.recordingCameras.length; i++) {
+            this.httpRequestService.getAccess(`api/file/${this.recordingCameras[i].cameraIdHash}`)
+            .subscribe(
+                data => { console.log("Success", data) },
+                err => { console.log("Fail", err); })
+            }
     }
 }
