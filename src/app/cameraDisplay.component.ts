@@ -105,8 +105,8 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
 
     // Prevents memory leakage when this view is destroyed
     ngOnDestroy() {
-        this.menuSubscription.unsubscribe(); // Stops any 
-        this.captureCamFeedClock.unsubscribe(); // Stops any recordings
+        this.menuSubscription.unsubscribe(); // Stops the menu Subscription 
+        this.stopRecordCamerasTimer(); // Stops any recordings upon leaving the camera views
     }
 
     // The formatted constructor receives the menu information when changed in parent
@@ -367,12 +367,10 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         this.recordingCameras.push(sentCamera);
     }
 
-    // Has the backend take and store a snapshot of the 
+    // Has the backend take and store a snapshot of the selected camera feeds
     startRecordCamerasTimer(sentRecordDelay) {
 
-        if (this.captureCamFeedClock !== undefined) {
-            this.captureCamFeedClock.unsubscribe();
-        }
+        this.stopRecordCamerasTimer();
 
         if (sentRecordDelay > 4 && this.recordingCameras.length > 0) {
             this.captureCamFeedClock = IntervalObservable.create(sentRecordDelay*1000).subscribe(timeKeeper => {
@@ -381,8 +379,11 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         }
     }
 
+    // Has the front end stop recording snapshots of the selected camera feeds
     stopRecordCamerasTimer() {
-        this.captureCamFeedClock.unsubscribe();
+        if (this.captureCamFeedClock !== undefined) {
+            this.captureCamFeedClock.unsubscribe();
+        }
     }
 
     recordCameras() {
