@@ -34,9 +34,14 @@ export class DVRComponent implements OnInit, OnDestroy {
         }[]
         }[] = [];
 
+    cameraDvrFocusArray: {                // Holds the selected cameras DVR recordings 
+        apiUrl: string,
+        dateString: string
+        }[] = []; 
+
     ngOnInit() {
-        this.menuService.activateMenu(true);    // Shows the nav-menu on page load
-        this.loadCameraPhotos();
+        this.menuService.activateMenu(true);    
+        this.loadCameraPhotos();    
     }
 
     // Prevents memory leakage when this view is destroyed
@@ -63,14 +68,7 @@ export class DVRComponent implements OnInit, OnDestroy {
                     },
                 err => { console.log(err) })
     }
-
-/*
-    convertSecondsToReadableDate(sentSeconds) {
-     let snapshotDate = new Date(1970, 0, 1); // UnixEpochTime
-        snapshotDate.setSeconds(sentSeconds);
-        return snapshotDate;
-    }
-*/    
+ 
     convertSecondsToReadableDate(sentSeconds) {
         let snapshotDate = new Date(Date.UTC(1970, 0, 1)); 
         snapshotDate.setSeconds(sentSeconds);
@@ -83,6 +81,23 @@ export class DVRComponent implements OnInit, OnDestroy {
         let formattedDateString = new Intl.DateTimeFormat('en-US', options).format(snapshotDate);
         return formattedDateString;
     }
+
+    viewCamSavedPhotos(sentSingleCamera) {
+        this.cameraDvrFocusArray = [];
+        for (let i = 0; i < sentSingleCamera.photoIdTime.length; i++) {
+            let dvrPic = {
+                apiUrl: `http://${GlobalVariables.serverIP}/api/file/${sentSingleCamera.photoIdTime[i].key}/dvrpics`,
+                dateString: this.convertSecondsToReadableDate(sentSingleCamera.photoIdTime[i].value)
+            }
+            this.cameraDvrFocusArray.push(dvrPic);
+        }
+    }
+
+    brokenImg(event) {
+        console.log(event);
+        event.target.src = `http://${GlobalVariables.serverIP}/api/file/-1/dvrpics`
+    }
+
 
 
 }
