@@ -1,1 +1,48 @@
-<h1>Cams DVR</h1>
+<!--Start of Message Boxes-->
+<!--When a user has no recorded pictures in the db-->
+<div class="ui grid" *ngIf="cameraPhotoList.length === 0">
+  <div class="two wide column"></div>
+  <div class="twelve wide column">
+    <div class="ui message">
+      <div class="header">
+        No Pictures Available
+      </div>
+      <p>You do not have any recorded pictures available for viewing! Select the "Record Feeds" icon in the upper menu bar to record some streams!</p>
+    </div>
+  </div>
+</div>
+<!--End of Message Boxes-->
+
+<div class="ui three column grid">
+  <div class="column" *ngFor="let cameraPhotos of cameraPhotoList">
+    <div class="ui fluid card">
+      <div class="content">
+        <div class="header">
+          <i class="photo icon"></i>
+          {{cameraPhotos.cameraName}}
+        </div>
+        <div class="ui grid">
+          <div class="four wide column">
+            <h4 class="ui header centered">
+              Contains
+              <div class="ui divider"></div>
+              <div class="sub header">{{cameraPhotos.photoIdTime.length}}</div>
+              <div class="sub header">snapshots</div>
+            </h4>
+          </div>
+          <div class="twelve wide column">
+            <h4 class="ui header centered">
+              Date Range
+              <div class="ui divider"></div>
+              <div class="sub header"><i class="angle double right icon"></i>{{convertSecondsToReadableDate(cameraPhotos.photoIdTime[0].value)}}</div>
+              <div class="sub header"><i class="angle double right icon"></i>{{convertSecondsToReadableDate(cameraPhotos.photoIdTime[cameraPhotos.photoIdTime.length - 1].value)}}</div>
+            </h4>
+          </div>
+          <div class="sixteen wide column">
+            <button class="ui fluid grey mini button">View Camera Snapshots</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
