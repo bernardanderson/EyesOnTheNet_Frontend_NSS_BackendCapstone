@@ -1,0 +1,13 @@
+.ui.three.column.grid {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+div.header {
+    margin-bottom: 15px;
+}
+
+.ui.divider {
+    margin-top: 0;
+    margin-bottom: 5px;
+}

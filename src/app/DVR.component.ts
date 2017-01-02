@@ -23,22 +23,66 @@ export class DVRComponent implements OnInit, OnDestroy {
 // Properties
 
     router: Router;                
-    subscription: Subscription;    // Needed for menu communication
+    menuSubscription: Subscription;    // Needed for menu communication
+
+    cameraPhotoList: {                 // Tracks the saved photos sent from the BE
+        cameraId: number,
+        cameraName: string,
+        photoIdTime: {
+            key: number,
+            value: number
+        }[]
+        }[] = [];
 
     ngOnInit() {
         this.menuService.activateMenu(true);    // Shows the nav-menu on page load
+        this.loadCameraPhotos();
     }
 
     // Prevents memory leakage when this view is destroyed
     ngOnDestroy() {
-        this.subscription.unsubscribe();
+        this.menuSubscription.unsubscribe();
     }
 
     // The formatted constructor receives the menu information when changed in parent
     constructor(private menuService: MenuService, private httpRequestService: HttpRequestService, router: Router) {  
         this.router = router;
-        this.subscription = menuService.selectedMenuItem$.subscribe(
+        this.menuSubscription = menuService.selectedMenuItem$.subscribe(
         menuItem => {
         });
     }
+
+    loadCameraPhotos() {
+        this.httpRequestService.getAccess('api/file/photolist')
+            .subscribe(
+ //               data => { this.cameraPhotoList = this.userCameraList.concat(data); },
+                data => { 
+                    console.log(data);
+                    this.cameraPhotoList = data;
+                    console.log(data);
+                    },
+                err => { console.log(err) })
+    }
+
+/*
+    convertSecondsToReadableDate(sentSeconds) {
+     let snapshotDate = new Date(1970, 0, 1); // UnixEpochTime
+        snapshotDate.setSeconds(sentSeconds);
+        return snapshotDate;
+    }
+*/    
+    convertSecondsToReadableDate(sentSeconds) {
+        let snapshotDate = new Date(Date.UTC(1970, 0, 1)); 
+        snapshotDate.setSeconds(sentSeconds);
+
+        let options = {
+            weekday: 'short', year: 'numeric', month: 'short', day: '2-digit',
+            hour: 'numeric', minute: 'numeric', second: 'numeric',
+            timeZoneName: 'short'
+        }
+        let formattedDateString = new Intl.DateTimeFormat('en-US', options).format(snapshotDate);
+        return formattedDateString;
+    }
+
+
 }

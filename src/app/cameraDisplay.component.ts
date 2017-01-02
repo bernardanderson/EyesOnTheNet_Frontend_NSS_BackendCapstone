@@ -37,7 +37,11 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     
 // Properties    
     router: Router;
-    subscription: Subscription;            // Needed for menu communication
+
+    menuSubscription: Subscription;            // Needed for menu communication
+    refreshTimerClock: Subscription;       // For refresh timer subscription
+    captureCamFeedClock: Subscription;     // For Cam Picture Capture subscription
+
     refreshinterval: number = 5000;        // For cam images refresh
     userCameraList: {
       cameraIdHash: number,
@@ -60,10 +64,6 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         private: 1,
         location: "",
     };          // For adding or editing a camera parameters
-
-    refreshTimerClock: Subscription;       // For refresh timer subscription
- 
-    captureCamFeedClock: Subscription;       // For Cam Picture Capture subscription
 
     refreshTimerOptions: {                 // Time options for the refreshes (in seconds)
             message: string,
@@ -101,25 +101,24 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.menuService.activateMenu(true);    // Shows the nav-menu on page load
         this.getCameraList();                   // Pulls the users cameras on page load
-        console.log("OnInit has run.")
     }
 
     // Prevents memory leakage when this view is destroyed
     ngOnDestroy() {
-        this.subscription.unsubscribe();
+        this.menuSubscription.unsubscribe(); // Stops the menu Subscription 
+        this.stopRecordCamerasTimer(); // Stops any recordings upon leaving the camera views
     }
 
     // The formatted constructor receives the menu information when changed in parent
     constructor(private menuService: MenuService, private httpRequestService: HttpRequestService, router: Router) {  
         this.router = router;
-        this.subscription = menuService.selectedMenuItem$.subscribe(
+        this.menuSubscription = menuService.selectedMenuItem$.subscribe(
         menuItem => {
             if (menuItem === "Add Camera"){
                 this.resetAddEditCameraObject();
                 this.initAddEditModal();
             }
         });
-        console.log("Constructor has run.");
     }
 
     // Gets the list of user cameras and populates the Camera MENU Cards
@@ -127,7 +126,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
       this.httpRequestService.getAccess('api/camera')
       .subscribe(
         data => { this.userCameraList = this.userCameraList.concat(data); },
-        err => { console.log(err); })
+        err => { })
     }
 
     // Gets a single camera for editing and opens the edit modal
@@ -139,7 +138,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
             this.addEditCamera.webAddress = this.addEditCamera.webAddress.slice(7);  // Removes the 'http://' from the edited Camera WebURL
             this.initAddEditModal();
         },
-        err => { console.log(err); })
+        err => { })
     }
 
     // When a user selects a camera for viewing it gets added to the viewArray.
@@ -248,10 +247,8 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
       let tempSingleCamera = this.currentSingleCamera[0];
 
       if (sentZoomDirection === "out" && tempSingleCamera.zoomLevel > 0) {
-        console.log("zooming out");
         tempSingleCamera.zoomLevel--;
       } else if (sentZoomDirection === "in" && tempSingleCamera.zoomLevel < 17) {
-        console.log("zooming in");
         tempSingleCamera.zoomLevel++;
       }
         tempSingleCamera.googleMapURL = `http://${GlobalVariables.serverIP}/api/camera/${tempSingleCamera.cameraIdHash}/${tempSingleCamera.zoomLevel}/googlemap`;
@@ -299,8 +296,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
           err => {
               this.showAddEditError("Error Adding Camera");
               return false;
-          }
-      );
+          });
     }
 
     abortCameraSubmit() {
@@ -371,12 +367,10 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         this.recordingCameras.push(sentCamera);
     }
 
-    // Has the backend take and store a snapshot of the 
-    recordCamerasTimer(sentRecordDelay) {
+    // Has the backend take and store a snapshot of the selected camera feeds
+    startRecordCamerasTimer(sentRecordDelay) {
 
-        if (this.captureCamFeedClock !== undefined) {
-            this.captureCamFeedClock.unsubscribe();
-        }
+        this.stopRecordCamerasTimer();
 
         if (sentRecordDelay > 4 && this.recordingCameras.length > 0) {
             this.captureCamFeedClock = IntervalObservable.create(sentRecordDelay*1000).subscribe(timeKeeper => {
@@ -385,14 +379,19 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         }
     }
 
+    // Has the front end stop recording snapshots of the selected camera feeds
+    stopRecordCamerasTimer() {
+        if (this.captureCamFeedClock !== undefined) {
+            this.captureCamFeedClock.unsubscribe();
+        }
+    }
+
     recordCameras() {
-        //console.log(this.recordingCameras);
-        //console.log("Cameras Recorded");
         for (let i = 0; i < this.recordingCameras.length; i++) {
             this.httpRequestService.getAccess(`api/file/${this.recordingCameras[i].cameraIdHash}`)
             .subscribe(
-                data => { console.log("Success", data) },
-                err => { console.log("Fail", err); })
-            }
+                data => { },
+                err => { }
+            )}
     }
 }

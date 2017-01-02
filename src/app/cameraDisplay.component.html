@@ -34,6 +34,57 @@
   
   <div class="twelve wide column">
 
+  <!--Start of Message Boxes for the Different Views-->
+    <!--When a user has no cameras in the db-->
+    <div class="ui message" *ngIf="userCameraList.length === 0">
+      <div class="header">
+        Add A Camera
+      </div>
+      <p>You have no cameras available for viewing! Use the "Add Camera" icon in the upper right to add a camera!</p>
+    </div>
+
+    <!--When a user has cameras in the db but isn't looking at any in the multiview-->
+    <div class="ui message" *ngIf="userCameraList.length > 0 && viewingCameras.length === 0 && router.url === '/camera/multicamera'">
+      <div class="header">
+        From the left menu, select cameras for viewing 
+      </div>
+      <p>Multiple camera feeds can be viewed at once!</p>
+      <ul class="list">
+        <li>Click on a camera name to add it to the view panel, click again to refresh the image</li>
+        <li>You can <strong>Edit</strong>, <strong>Refresh</strong> and <strong>Close</strong> the view from the menu bar beneath each view panel</li>
+        <li>To see an enlarged camera feed (and it's location) select <strong>Expand</strong> from the menu bar under the feed</li>
+      </ul>
+    </div>
+
+    <!--When a user has cameras in the db but isn't looking at any in the singleview-->
+    <div class="ui message" *ngIf="userCameraList.length > 0 && currentSingleCamera.length === 0 && router.url === '/camera/singlecamera'">
+      <div class="header">
+        From the left menu, select a camera for enhanced viewing 
+      </div>
+      <p>You can see an enlarged view of a single camera feed!</p>
+      <ul class="list">
+        <li>Click on a camera name to add it to the view panel along with it's GeoLocation and physical address</li>
+        <li>You can Zoom In and Out on the GeoLocation panel to get a closer look at where the camera feed is located</li>
+        <li>You can <strong>Edit</strong>, <strong>Refresh</strong> and <strong>Close</strong> the view from the menu bar beneath each view panel</li>
+      </ul>
+    </div>
+
+    <!--When a user has cameras in the db but isn't recording at any in the record view-->
+    <div class="ui message" *ngIf="userCameraList.length > 0 && recordingCameras.length === 0 && router.url === '/camera/record'">
+      <div class="header">
+        From the left menu, select cameras to record their streams 
+      </div>
+      <p>Multiple cameras can have their streams recorded at a timed interval</p>
+      <ul class="list">
+        <li>Click on a camera name to add it to the recording panel, click the name again to remove it</li>
+        <li>Enter any time greater than 5 seconds in the <strong>sec per capture</strong> field and click <strong>Update Recording Cameras</strong> to start recording their streams</li>
+        <li>To stop recording, click the <strong>Stop Recording</strong> button</li>
+        <li>NOTE: Camera streams can be dynamically added/removed while the recording is taking place</li>
+      </ul>
+    </div>
+
+  <!--End of Message Boxes for the Different Views-->
+
     <div [ngSwitch]="router.url">
 
       <!-- The View for multiple Cameras -->
@@ -127,14 +178,6 @@
 
     <!--The view for the record camera-->
     <div *ngSwitchCase="'/camera/record'">
-      <div *ngIf="recordingCameras.length === 0">
-        <div class="ui info message">
-          <div class="header">
-            Select Cameras from the Left Menu to Record Their Feeds 
-          </div>
-        </div>
-      </div>
-
       <table class="ui celled striped table" *ngIf="recordingCameras.length !== 0">
         <thead>
           <tr> 
@@ -165,7 +208,8 @@
               </div>
             </th>
             <th class="ui center aligned">
-              <div class="ui blue button" (click)="recordCamerasTimer(delayTime.value)">Update Recording Cameras</div>
+              <div class="ui green button" (click)="startRecordCamerasTimer(delayTime.value)">Update Recording</div>
+              <div class="ui red button" (click)="stopRecordCamerasTimer()">Stop Recording</div>
             </th>
           </tr>
         </tfoot>
