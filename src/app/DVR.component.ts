@@ -15,6 +15,7 @@ declare var $: any;
 interface SimpleDvrPhotoElement {                // Holds the selected cameras DVR recordings 
     photoId: number,
     elementNumber: number,
+    cameraName: string,
     apiUrl: string,
     dateString: string
     };
@@ -106,16 +107,30 @@ export class DVRComponent implements OnInit, OnDestroy {
         }
     }
 
+    setEightElementCameraArray() {
+        if (this.completeElementPhotoList.length < 8) {
+            for (let i = 0; i < this.completeElementPhotoList.length; i++ ) {
+                this.cameraPhotoList.push(this.completeElementPhotoList[i]);
+            }
+        } else if (this.completeElementPhotoList.length > 3) {
+            for (let i = 0; i < 3; i++ ) {
+                this.cameraPhotoList.push(this.completeElementPhotoList[0]);
+                this.completeElementPhotoList.push(this.completeElementPhotoList.shift());
+            }
+        }
+    }
+
     // Cycles through the recorded cameras to only keep three viewable at a time
     changeCameraArray(sentDirection) {
         if (this.completeElementPhotoList.length > 3) {
             if (sentDirection === "back"){
                 this.cameraPhotoList.pop();
                 let firstElementIndex = this.completeElementPhotoList.indexOf(this.cameraPhotoList[0]);
+
                 this.cameraPhotoList.unshift(this.completeElementPhotoList[firstElementIndex - 1])
                 this.completeElementPhotoList.unshift(this.completeElementPhotoList.pop());
             } else if (sentDirection === "forward") {
-                this.cameraPhotoList.shift();
+                let tempShift = this.cameraPhotoList.shift();
                 this.cameraPhotoList.push(this.completeElementPhotoList[0]);
                 this.completeElementPhotoList.push(this.completeElementPhotoList.shift());
             }
@@ -124,15 +139,17 @@ export class DVRComponent implements OnInit, OnDestroy {
 
     // Populates the array for viewing a single camera's recorded images
     viewCamSavedPhotos(sentSingleCamera) {
+        this.enlargedElementVal = 0;        // Need to zero the dimmer image to account for arrays that are smaller than a previously viewed array 
         this.cameraDvrFocusArray = [];
         for (let i = 0; i < sentSingleCamera.photoIdTime.length; i++) {
             let dvrPic = {
+                cameraName: sentSingleCamera.cameraName,
                 photoId: sentSingleCamera.photoIdTime[i].key,
                 elementNumber: i,
                 apiUrl: `http://${GlobalVariables.serverIP}/api/file/${sentSingleCamera.photoIdTime[i].key}/dvrpics`,
                 dateString: this.convertSecondsToReadableDate(sentSingleCamera.photoIdTime[i].value)
             }
-            this.cameraDvrFocusArray.push(dvrPic);
+        this.cameraDvrFocusArray.push(dvrPic);
         }
     }
 
@@ -155,12 +172,12 @@ export class DVRComponent implements OnInit, OnDestroy {
             console.log("You clicked Delete");
         } else if ( cardClickedOption === "Enlarge") {
             this.enlargedElementVal = sentCameraPhotoInfo.elementNumber;
-            $('.ui.five.column.grid').dimmer('show');
+            $('.ui.four.column.grid').dimmer('show');
         }
     }
 
     // Hides the dimmer when a Photo is enlarged
     hideDimmer() {
-        $('.ui.five.column.grid').dimmer('hide');
+        $('.ui.four.column.grid').dimmer('hide');
     }
 }

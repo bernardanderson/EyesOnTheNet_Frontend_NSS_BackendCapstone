@@ -1,4 +1,4 @@
-.ui.three.column.grid, .ui.five.column.grid {
+.ui.three.column.grid, .ui.four.column.grid {
     margin-left: 10px;
     margin-right: 10px;
 }
@@ -32,3 +32,10 @@ div.reducedpadd {
     cursor: pointer;
     color: #1e70bf;
 }
+
+/*
+div.ui.four.column.grid {
+    height: 60vh;
+    overflow-y: scroll;
+}
+*/
