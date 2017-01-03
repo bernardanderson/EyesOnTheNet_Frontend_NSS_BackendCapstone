@@ -32,3 +32,10 @@ div.reducedpadd {
     cursor: pointer;
     color: #1e70bf;
 }
+
+/*
+div.ui.four.column.grid {
+    height: 60vh;
+    overflow-y: scroll;
+}
+*/

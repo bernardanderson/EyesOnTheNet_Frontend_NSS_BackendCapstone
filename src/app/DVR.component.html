@@ -62,20 +62,12 @@
   </div>
 </div>
 
-<div class="ui three column centered grid" *ngIf="cameraDvrFocusArray.length > 0">
-  <div class="two wide column reducedpadd buttonhover" (click)="changeCameraArray('back')" *ngIf="cameraDvrFocusArray.length > 10">
-    <i class="small arrow left icon"></i> 
-    More Photos
-  </div>
+<div class="ui one column centered grid" *ngIf="cameraDvrFocusArray.length > 0">
   <div class="twelve wide column reducedpadd">
     <h4 class="ui horizontal divider header">
       <i class="film icon"></i>
       {{cameraDvrFocusArray[0].cameraName}}'s Photos ({{cameraDvrFocusArray.length}} Total)
     </h4>
-  </div>
-  <div class="two wide column right aligned reducedpadd buttonhover" (click)="changeCameraArray('forward')" *ngIf="cameraDvrFocusArray.length > 10">
-    More Photos
-    <i class="small arrow right icon"></i> 
   </div>
 </div>
 <div class="ui four column grid" *ngIf="cameraDvrFocusArray.length > 0">
