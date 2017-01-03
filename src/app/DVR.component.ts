@@ -112,10 +112,11 @@ export class DVRComponent implements OnInit, OnDestroy {
             if (sentDirection === "back"){
                 this.cameraPhotoList.pop();
                 let firstElementIndex = this.completeElementPhotoList.indexOf(this.cameraPhotoList[0]);
+
                 this.cameraPhotoList.unshift(this.completeElementPhotoList[firstElementIndex - 1])
                 this.completeElementPhotoList.unshift(this.completeElementPhotoList.pop());
             } else if (sentDirection === "forward") {
-                this.cameraPhotoList.shift();
+                let tempShift = this.cameraPhotoList.shift();
                 this.cameraPhotoList.push(this.completeElementPhotoList[0]);
                 this.completeElementPhotoList.push(this.completeElementPhotoList.shift());
             }
@@ -124,6 +125,7 @@ export class DVRComponent implements OnInit, OnDestroy {
 
     // Populates the array for viewing a single camera's recorded images
     viewCamSavedPhotos(sentSingleCamera) {
+        this.enlargedElementVal = 0;        // Need to zero the dimmer image to account for arrays that are smaller than a previously viewed array 
         this.cameraDvrFocusArray = [];
         for (let i = 0; i < sentSingleCamera.photoIdTime.length; i++) {
             let dvrPic = {
@@ -132,7 +134,7 @@ export class DVRComponent implements OnInit, OnDestroy {
                 apiUrl: `http://${GlobalVariables.serverIP}/api/file/${sentSingleCamera.photoIdTime[i].key}/dvrpics`,
                 dateString: this.convertSecondsToReadableDate(sentSingleCamera.photoIdTime[i].value)
             }
-            this.cameraDvrFocusArray.push(dvrPic);
+        this.cameraDvrFocusArray.push(dvrPic);
         }
     }
 
