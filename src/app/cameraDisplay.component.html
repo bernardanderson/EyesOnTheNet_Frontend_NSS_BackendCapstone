@@ -95,7 +95,7 @@
                 <div class="ui grid">
                   <div class="column">
                     <h3 class="ui header centered">{{camera.name}}</h3>
-                    <img class="ui rounded image centered" [src]="camera.cameraURL"/>
+                    <img class="ui rounded image centered" [src]="camera.cameraURL" (error)="brokenImg($event)"/>
                     <div class="ui four item text menu">
                       <a class="item">
                         <i class="zoom icon"></i> Expand
@@ -129,7 +129,7 @@
                 <div class="ui grid">
                   <div class="column">
                     <h3 class="ui header centered">{{oneSingleCamera.name}}</h3>
-                    <img class="ui rounded huge image centered" [src]=oneSingleCamera.cameraURL>
+                    <img class="ui rounded huge image centered" [src]="oneSingleCamera.cameraURL" (error)="brokenImg($event)">
                     <div class="ui four item text menu">
                       <a class="item">
                         <i class="edit icon"></i> Edit
@@ -152,7 +152,7 @@
                 <div class="ui grid">
                   <div class="column"> 
                     <h3 class="ui header centered">GeoLocation</h3>
-                    <img class="ui rounded image centered" [src]="oneSingleCamera.googleMapURL">
+                    <img class="ui rounded image centered" [src]="oneSingleCamera.googleMapURL" (error)="brokenImg($event)">
                     <div class="ui two item text menu">
                       <a class="item" (click)="mapZoom('out')">
                         <i class="small zoom out icon"></i> Zoom Out
@@ -193,7 +193,7 @@
           <tr *ngFor="let oneRecordingCamera of recordingCameras; let i = index">
             <td class="ui center aligned">{{i + 1}}</td>
             <td class="ui center aligned">{{oneRecordingCamera.name}}</td>
-            <td><img class="ui rounded image small centered" [src]="oneRecordingCamera.cameraURL"/></td>
+            <td><img class="ui rounded image small centered" [src]="oneRecordingCamera.cameraURL" (error)="brokenImg($event)"/></td>
           </tr>
         </tbody>
         <tfoot>

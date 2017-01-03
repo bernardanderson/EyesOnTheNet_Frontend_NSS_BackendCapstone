@@ -194,6 +194,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         }
     }
 
+    // The menu logic for each camera view
     camPicMenu(sentEvent, sentCamera) {
         let camMenuAction: string = "";
         if (sentEvent.target.className.includes("icon")) {
@@ -299,6 +300,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
           });
     }
 
+    // For when you about the Submission of a camera Add/Edit
     abortCameraSubmit() {
         $('.ui.modal.addcamera').modal('hide');
     }
@@ -316,6 +318,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
       this.addEditCamera.location = ""
     }; 
 
+    // Shows an Error when the Camera Add/Edit is incorrect
     showAddEditError(sentErrorMessage: string) {
         this.addEditCameraError.hasError = true;
         this.addEditCameraError.message = sentErrorMessage;
@@ -329,6 +332,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         }).modal('show');
     }
 
+    // Deletes a camera from the Db
     deleteCamera() {
         this.httpRequestService.deleteCamera(`api/camera/${this.addEditCamera.cameraId}`)
         .subscribe(
@@ -386,6 +390,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         }
     }
 
+    // Starts the recording of Cameras
     recordCameras() {
         for (let i = 0; i < this.recordingCameras.length; i++) {
             this.httpRequestService.getAccess(`api/file/${this.recordingCameras[i].cameraIdHash}`)
@@ -394,4 +399,10 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
                 err => { }
             )}
     }
+
+    // Used for replacing broken img [src] with a standard image
+    brokenImg(event) {
+        event.target.src = `http://${GlobalVariables.serverIP}/api/file/-1/dvrpics`;
+    }
+
 }
