@@ -13,12 +13,27 @@
 </div>
 <!--End of Message Boxes-->
 
+<div class="ui three column centered grid" *ngIf="completeElementPhotoList.length > 0">
+  <div class="two wide column reducedpadd buttonhover" (click)="changeCameraArray('back')" *ngIf="completeElementPhotoList.length > 3">
+    <i class="small arrow left icon"></i> 
+    More Cameras
+  </div>
+  <div class="twelve wide column reducedpadd">
+    <h4 class="ui horizontal divider header">
+      <i class="photo icon"></i>
+      Recorded Cameras ({{completeElementPhotoList.length}} Total)
+    </h4>
+  </div>
+  <div class="two wide column right aligned reducedpadd buttonhover" (click)="changeCameraArray('forward')" *ngIf="completeElementPhotoList.length > 3">
+    More Cameras
+    <i class="small arrow right icon"></i> 
+  </div>
+</div>
 <div class="ui three column grid">
-  <div class="column" *ngFor="let cameraPhotos of cameraPhotoList">
+  <div class="column cameras" *ngFor="let cameraPhotos of cameraPhotoList">
     <div class="ui fluid card">
       <div class="content">
-        <div class="header">
-          <i class="photo icon"></i>
+        <div class="ui header centered">
           {{cameraPhotos.cameraName}}
         </div>
         <div class="ui grid">
@@ -47,7 +62,23 @@
   </div>
 </div>
 
-<div class="ui four column grid" *ngIf="cameraDvrFocusArray.length > 0">
+<div class="ui three column centered grid" *ngIf="cameraDvrFocusArray.length > 0">
+  <div class="two wide column reducedpadd buttonhover" (click)="changeCameraArray('back')" *ngIf="cameraDvrFocusArray.length > 10">
+    <i class="small arrow left icon"></i> 
+    More Photos
+  </div>
+  <div class="twelve wide column reducedpadd">
+    <h4 class="ui horizontal divider header">
+      <i class="film icon"></i>
+      Photos ({{cameraDvrFocusArray.length}} Total)
+    </h4>
+  </div>
+  <div class="two wide column right aligned reducedpadd buttonhover" (click)="changeCameraArray('forward')" *ngIf="cameraDvrFocusArray.length > 10">
+    More Photos
+    <i class="small arrow right icon"></i> 
+  </div>
+</div>
+<div class="ui five column grid" *ngIf="cameraDvrFocusArray.length > 0">
   <div class="column" *ngFor="let cameraPhotos of cameraDvrFocusArray">
     <div class="ui card" >
       <div class="image">
@@ -70,6 +101,7 @@
       </div>
     </div>
   </div>
+  
   <div class="ui inverted page dimmer">
     <div class="content">
       <div class="center">
