@@ -45,8 +45,7 @@ export class DVRComponent implements OnInit, OnDestroy {
     completeElementPhotoList: LargePhotoElement[] = [];  // Holds all cameras returned from the BE
     cameraPhotoList: LargePhotoElement[] = [];           // Element for the three item camera list 
 
-    completeDvrFocusArray: SimpleDvrPhotoElement[] = []; // Holds the array of photos for the selected camera
-    cameraDvrFocusArray: SimpleDvrPhotoElement[] = [];   // Element for the ten item photo list
+    cameraDvrFocusArray: SimpleDvrPhotoElement[] = [];   // Holds the array of photos for the selected camera
     
     enlargedElementVal: number = 0;                      // Element of Option for enlarging photo
 
@@ -107,19 +106,6 @@ export class DVRComponent implements OnInit, OnDestroy {
         }
     }
 
-    setEightElementCameraArray() {
-        if (this.completeElementPhotoList.length < 8) {
-            for (let i = 0; i < this.completeElementPhotoList.length; i++ ) {
-                this.cameraPhotoList.push(this.completeElementPhotoList[i]);
-            }
-        } else if (this.completeElementPhotoList.length > 3) {
-            for (let i = 0; i < 3; i++ ) {
-                this.cameraPhotoList.push(this.completeElementPhotoList[0]);
-                this.completeElementPhotoList.push(this.completeElementPhotoList.shift());
-            }
-        }
-    }
-
     // Cycles through the recorded cameras to only keep three viewable at a time
     changeCameraArray(sentDirection) {
         if (this.completeElementPhotoList.length > 3) {
@@ -169,12 +155,31 @@ export class DVRComponent implements OnInit, OnDestroy {
         }
      
         if (cardClickedOption === "Delete") {
-            console.log("You clicked Delete");
+            this.deleteCameraPicture(sentCameraPhotoInfo);
         } else if ( cardClickedOption === "Enlarge") {
             this.enlargedElementVal = sentCameraPhotoInfo.elementNumber;
             $('.ui.four.column.grid').dimmer('show');
         }
     }
+
+    // Deletes a camera from the Db
+    deleteCameraPicture(sentCameraPhotoInfo) {
+        this.httpRequestService.deleteCamera(`api/files/${sentCameraPhotoInfo.photoId}`)
+        .subscribe(
+            data => {
+                // With successful photo delete, resets the camera pictures list
+                console.log("Photo Deleted", data);
+            },
+            err => {
+                console.log(err);
+            })
+    }
+
+
+
+
+
+
 
     // Hides the dimmer when a Photo is enlarged
     hideDimmer() {
