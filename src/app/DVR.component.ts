@@ -168,6 +168,12 @@ export class DVRComponent implements OnInit, OnDestroy {
         .subscribe(
             data => {
                 // With successful photo delete, resets the camera pictures list
+                
+                let deletedPhotoIndex = this.cameraDvrFocusArray.indexOf(sentCameraPhotoInfo);
+                if (deletedPhotoIndex !== -1) {
+                    this.cameraDvrFocusArray.splice(deletedPhotoIndex, 1);
+                }
+                //this.completeElementPhotoList.indexOf()
                 console.log("Photo Deleted", data);
             },
             err => {
