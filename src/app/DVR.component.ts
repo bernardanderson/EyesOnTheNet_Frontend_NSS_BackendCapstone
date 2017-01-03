@@ -164,7 +164,7 @@ export class DVRComponent implements OnInit, OnDestroy {
 
     // Deletes a camera from the Db
     deleteCameraPicture(sentCameraPhotoInfo) {
-        this.httpRequestService.deleteCamera(`api/files/${sentCameraPhotoInfo.photoId}`)
+        this.httpRequestService.deleteCamera(`api/file/${sentCameraPhotoInfo.photoId}`)
         .subscribe(
             data => {
                 // With successful photo delete, resets the camera pictures list
@@ -174,12 +174,6 @@ export class DVRComponent implements OnInit, OnDestroy {
                 console.log(err);
             })
     }
-
-
-
-
-
-
 
     // Hides the dimmer when a Photo is enlarged
     hideDimmer() {
