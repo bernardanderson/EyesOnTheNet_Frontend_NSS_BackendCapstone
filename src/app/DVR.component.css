@@ -1,4 +1,4 @@
-.ui.three.column.grid {
+.ui.three.column.grid, .ui.five.column.grid {
     margin-left: 10px;
     margin-right: 10px;
 }
@@ -10,4 +10,25 @@ div.header {
 .ui.divider {
     margin-top: 0;
     margin-bottom: 5px;
+}
+
+.ui.inverted.page.dimmer {
+    background-color: rgba(0,0,0,0.95);
+}
+
+.ui.centered.rounded.huge.image {
+    border: 2px solid white;
+}
+
+div.column.cameras {
+    padding-top: 0px !important;
+}
+
+div.reducedpadd {
+    padding-bottom: 3px !important;
+}
+
+.buttonhover:hover {
+    cursor: pointer;
+    color: #1e70bf;
 }

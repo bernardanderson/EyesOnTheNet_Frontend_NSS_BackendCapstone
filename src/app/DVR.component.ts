@@ -12,6 +12,22 @@ import { GlobalVariables } from './global';
 
 declare var $: any;
 
+interface SimpleDvrPhotoElement {                // Holds the selected cameras DVR recordings 
+    photoId: number,
+    elementNumber: number,
+    apiUrl: string,
+    dateString: string
+    };
+
+interface LargePhotoElement {                
+        cameraId: number,
+        cameraName: string,
+        photoIdTime: {
+            key: number,
+            value: number
+        }[]
+        };
+
 @Component({
     selector: 'dvr-view', 
     templateUrl: 'DVR.component.html',
@@ -25,18 +41,17 @@ export class DVRComponent implements OnInit, OnDestroy {
     router: Router;                
     menuSubscription: Subscription;    // Needed for menu communication
 
-    cameraPhotoList: {                 // Tracks the saved photos sent from the BE
-        cameraId: number,
-        cameraName: string,
-        photoIdTime: {
-            key: number,
-            value: number
-        }[]
-        }[] = [];
+    completeElementPhotoList: LargePhotoElement[] = [];  // Holds all cameras returned from the BE
+    cameraPhotoList: LargePhotoElement[] = [];           // Element for the three item camera list 
+
+    completeDvrFocusArray: SimpleDvrPhotoElement[] = []; // Holds the array of photos for the selected camera
+    cameraDvrFocusArray: SimpleDvrPhotoElement[] = [];   // Element for the ten item photo list
+    
+    enlargedElementVal: number = 0;                      // Element of Option for enlarging photo
 
     ngOnInit() {
-        this.menuService.activateMenu(true);    // Shows the nav-menu on page load
-        this.loadCameraPhotos();
+        this.menuService.activateMenu(true);    
+        this.loadCameraPhotos();    
     }
 
     // Prevents memory leakage when this view is destroyed
@@ -52,25 +67,18 @@ export class DVRComponent implements OnInit, OnDestroy {
         });
     }
 
+    // Gets all available recorded cameras and their photos
     loadCameraPhotos() {
         this.httpRequestService.getAccess('api/file/photolist')
             .subscribe(
- //               data => { this.cameraPhotoList = this.userCameraList.concat(data); },
-                data => { 
-                    console.log(data);
-                    this.cameraPhotoList = data;
-                    console.log(data);
+                data => {
+                    this.completeElementPhotoList = data;
+                    this.setThreeElementCameraArray(); 
                     },
                 err => { console.log(err) })
     }
-
-/*
-    convertSecondsToReadableDate(sentSeconds) {
-     let snapshotDate = new Date(1970, 0, 1); // UnixEpochTime
-        snapshotDate.setSeconds(sentSeconds);
-        return snapshotDate;
-    }
-*/    
+ 
+    // Converts the Unix time in seconds to and readable date
     convertSecondsToReadableDate(sentSeconds) {
         let snapshotDate = new Date(Date.UTC(1970, 0, 1)); 
         snapshotDate.setSeconds(sentSeconds);
@@ -84,5 +92,75 @@ export class DVRComponent implements OnInit, OnDestroy {
         return formattedDateString;
     }
 
+    // Initially builds the three camera array 
+    setThreeElementCameraArray() {
+        if (this.completeElementPhotoList.length < 3) {
+            for (let i = 0; i < this.completeElementPhotoList.length; i++ ) {
+                this.cameraPhotoList.push(this.completeElementPhotoList[i]);
+            }
+        } else if (this.completeElementPhotoList.length > 3) {
+            for (let i = 0; i < 3; i++ ) {
+                this.cameraPhotoList.push(this.completeElementPhotoList[0]);
+                this.completeElementPhotoList.push(this.completeElementPhotoList.shift());
+            }
+        }
+    }
 
+    // Cycles through the recorded cameras to only keep three viewable at a time
+    changeCameraArray(sentDirection) {
+        if (this.completeElementPhotoList.length > 3) {
+            if (sentDirection === "back"){
+                this.cameraPhotoList.pop();
+                let firstElementIndex = this.completeElementPhotoList.indexOf(this.cameraPhotoList[0]);
+                this.cameraPhotoList.unshift(this.completeElementPhotoList[firstElementIndex - 1])
+                this.completeElementPhotoList.unshift(this.completeElementPhotoList.pop());
+            } else if (sentDirection === "forward") {
+                this.cameraPhotoList.shift();
+                this.cameraPhotoList.push(this.completeElementPhotoList[0]);
+                this.completeElementPhotoList.push(this.completeElementPhotoList.shift());
+            }
+        }
+    }
+
+    // Populates the array for viewing a single camera's recorded images
+    viewCamSavedPhotos(sentSingleCamera) {
+        this.cameraDvrFocusArray = [];
+        for (let i = 0; i < sentSingleCamera.photoIdTime.length; i++) {
+            let dvrPic = {
+                photoId: sentSingleCamera.photoIdTime[i].key,
+                elementNumber: i,
+                apiUrl: `http://${GlobalVariables.serverIP}/api/file/${sentSingleCamera.photoIdTime[i].key}/dvrpics`,
+                dateString: this.convertSecondsToReadableDate(sentSingleCamera.photoIdTime[i].value)
+            }
+            this.cameraDvrFocusArray.push(dvrPic);
+        }
+    }
+
+    // Used for replacing broken img [src] with a standard image
+    brokenImg(event) {
+        event.target.src = `http://${GlobalVariables.serverIP}/api/file/-1/dvrpics`;
+    }
+
+    // Checks for the photo events of Delete or Enlarge
+    cardClickAction(event, sentCameraPhotoInfo) {
+        let cardClickedOption: string = "";
+        this.enlargedElementVal = 0;
+        if (event.target.tagName === "I"){
+            cardClickedOption = event.target.parentElement.innerText.substring(1);
+        } else if (event.target.tagName === "A") {
+            cardClickedOption = event.target.innerText.substring(1);
+        }
+     
+        if (cardClickedOption === "Delete") {
+            console.log("You clicked Delete");
+        } else if ( cardClickedOption === "Enlarge") {
+            this.enlargedElementVal = sentCameraPhotoInfo.elementNumber;
+            $('.ui.five.column.grid').dimmer('show');
+        }
+    }
+
+    // Hides the dimmer when a Photo is enlarged
+    hideDimmer() {
+        $('.ui.five.column.grid').dimmer('hide');
+    }
 }
