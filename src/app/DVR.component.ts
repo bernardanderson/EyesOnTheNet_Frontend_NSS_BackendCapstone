@@ -12,6 +12,13 @@ import { GlobalVariables } from './global';
 
 declare var $: any;
 
+interface SimpleDvrPhotoElement {                // Holds the selected cameras DVR recordings 
+        photoId: number,
+        elementNumber: number,
+        apiUrl: string,
+        dateString: string
+        };
+
 @Component({
     selector: 'dvr-view', 
     templateUrl: 'DVR.component.html',
@@ -34,10 +41,8 @@ export class DVRComponent implements OnInit, OnDestroy {
         }[]
         }[] = [];
 
-    cameraDvrFocusArray: {                // Holds the selected cameras DVR recordings 
-        apiUrl: string,
-        dateString: string
-        }[] = []; 
+    cameraDvrFocusArray: SimpleDvrPhotoElement[] = [];
+    enlargedElementVal: number = 0; // Element of Option for enlarging photo
 
     ngOnInit() {
         this.menuService.activateMenu(true);    
@@ -60,11 +65,8 @@ export class DVRComponent implements OnInit, OnDestroy {
     loadCameraPhotos() {
         this.httpRequestService.getAccess('api/file/photolist')
             .subscribe(
- //               data => { this.cameraPhotoList = this.userCameraList.concat(data); },
                 data => { 
-                    console.log(data);
                     this.cameraPhotoList = data;
-                    console.log(data);
                     },
                 err => { console.log(err) })
     }
@@ -82,10 +84,13 @@ export class DVRComponent implements OnInit, OnDestroy {
         return formattedDateString;
     }
 
+    // Populates the array for viewing a single camera's recorded images
     viewCamSavedPhotos(sentSingleCamera) {
         this.cameraDvrFocusArray = [];
         for (let i = 0; i < sentSingleCamera.photoIdTime.length; i++) {
             let dvrPic = {
+                photoId: sentSingleCamera.photoIdTime[i].key,
+                elementNumber: i,
                 apiUrl: `http://${GlobalVariables.serverIP}/api/file/${sentSingleCamera.photoIdTime[i].key}/dvrpics`,
                 dateString: this.convertSecondsToReadableDate(sentSingleCamera.photoIdTime[i].value)
             }
@@ -93,11 +98,30 @@ export class DVRComponent implements OnInit, OnDestroy {
         }
     }
 
+    // Used for replacing broken img [src] with a standard image
     brokenImg(event) {
-        console.log(event);
-        event.target.src = `http://${GlobalVariables.serverIP}/api/file/-1/dvrpics`
+        event.target.src = `http://${GlobalVariables.serverIP}/api/file/-1/dvrpics`;
     }
 
+    cardClickAction(event, sentCameraPhotoInfo) {
+        let cardClickedOption: string = "";
+        this.enlargedElementVal = 0;
+        if (event.target.tagName === "I"){
+            cardClickedOption = event.target.parentElement.innerText.substring(1);
+        } else if (event.target.tagName === "A") {
+            cardClickedOption = event.target.innerText.substring(1);
+        }
+     
+        if (cardClickedOption === "Delete") {
+            console.log("You clicked Delete");
+        } else if ( cardClickedOption === "Enlarge") {
+            this.enlargedElementVal = sentCameraPhotoInfo.elementNumber;
+            $('.ui.four.column.grid').dimmer('show');
+        }
+    }
 
+    hideDimmer() {
+        $('.ui.four.column.grid').dimmer('hide');
+    }
 
 }

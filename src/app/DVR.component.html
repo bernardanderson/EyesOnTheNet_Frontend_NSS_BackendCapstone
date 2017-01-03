@@ -49,7 +49,7 @@
 
 <div class="ui four column grid" *ngIf="cameraDvrFocusArray.length > 0">
   <div class="column" *ngFor="let cameraPhotos of cameraDvrFocusArray">
-    <div class="ui card centered">
+    <div class="ui card" >
       <div class="image">
         <img [src]="cameraPhotos.apiUrl" (error)="brokenImg($event)">
       </div>
@@ -57,6 +57,25 @@
         <div class="description">
           {{cameraPhotos.dateString}}
         </div>
+      </div>
+      <div class="extra content" (click)="cardClickAction($event, cameraPhotos)">
+        <a class="right floated">
+          <i class="trash outline small icon"></i> 
+          Delete
+        </a>
+        <a>
+          <i class="zoom small icon"></i>
+          Enlarge
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="ui inverted page dimmer">
+    <div class="content">
+      <div class="center">
+      <img class="ui centered rounded huge image" [src]="cameraDvrFocusArray[enlargedElementVal].apiUrl" (error)="brokenImg($event)" (click)="hideDimmer()">
+      <div class="ui inverted header">{{cameraDvrFocusArray[enlargedElementVal].dateString}}</div>
+      <div class="ui inverted">(Click Image to Close)</div>
       </div>
     </div>
   </div>

@@ -11,3 +11,11 @@ div.header {
     margin-top: 0;
     margin-bottom: 5px;
 }
+
+.ui.inverted.page.dimmer {
+    background-color: rgba(0,0,0,0.95);
+}
+
+.ui.centered.rounded.huge.image {
+    border: 2px solid white;
+}
