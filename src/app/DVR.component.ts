@@ -15,6 +15,7 @@ declare var $: any;
 interface SimpleDvrPhotoElement {                // Holds the selected cameras DVR recordings 
     photoId: number,
     elementNumber: number,
+    cameraName: string,
     apiUrl: string,
     dateString: string
     };
@@ -106,6 +107,19 @@ export class DVRComponent implements OnInit, OnDestroy {
         }
     }
 
+    setEightElementCameraArray() {
+        if (this.completeElementPhotoList.length < 8) {
+            for (let i = 0; i < this.completeElementPhotoList.length; i++ ) {
+                this.cameraPhotoList.push(this.completeElementPhotoList[i]);
+            }
+        } else if (this.completeElementPhotoList.length > 3) {
+            for (let i = 0; i < 3; i++ ) {
+                this.cameraPhotoList.push(this.completeElementPhotoList[0]);
+                this.completeElementPhotoList.push(this.completeElementPhotoList.shift());
+            }
+        }
+    }
+
     // Cycles through the recorded cameras to only keep three viewable at a time
     changeCameraArray(sentDirection) {
         if (this.completeElementPhotoList.length > 3) {
@@ -129,6 +143,7 @@ export class DVRComponent implements OnInit, OnDestroy {
         this.cameraDvrFocusArray = [];
         for (let i = 0; i < sentSingleCamera.photoIdTime.length; i++) {
             let dvrPic = {
+                cameraName: sentSingleCamera.cameraName,
                 photoId: sentSingleCamera.photoIdTime[i].key,
                 elementNumber: i,
                 apiUrl: `http://${GlobalVariables.serverIP}/api/file/${sentSingleCamera.photoIdTime[i].key}/dvrpics`,
@@ -157,12 +172,12 @@ export class DVRComponent implements OnInit, OnDestroy {
             console.log("You clicked Delete");
         } else if ( cardClickedOption === "Enlarge") {
             this.enlargedElementVal = sentCameraPhotoInfo.elementNumber;
-            $('.ui.five.column.grid').dimmer('show');
+            $('.ui.four.column.grid').dimmer('show');
         }
     }
 
     // Hides the dimmer when a Photo is enlarged
     hideDimmer() {
-        $('.ui.five.column.grid').dimmer('hide');
+        $('.ui.four.column.grid').dimmer('hide');
     }
 }

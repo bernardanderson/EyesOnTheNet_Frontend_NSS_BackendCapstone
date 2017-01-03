@@ -70,7 +70,7 @@
   <div class="twelve wide column reducedpadd">
     <h4 class="ui horizontal divider header">
       <i class="film icon"></i>
-      Photos ({{cameraDvrFocusArray.length}} Total)
+      {{cameraDvrFocusArray[0].cameraName}}'s Photos ({{cameraDvrFocusArray.length}} Total)
     </h4>
   </div>
   <div class="two wide column right aligned reducedpadd buttonhover" (click)="changeCameraArray('forward')" *ngIf="cameraDvrFocusArray.length > 10">
@@ -78,15 +78,16 @@
     <i class="small arrow right icon"></i> 
   </div>
 </div>
-<div class="ui five column grid" *ngIf="cameraDvrFocusArray.length > 0">
+<div class="ui four column grid" *ngIf="cameraDvrFocusArray.length > 0">
   <div class="column" *ngFor="let cameraPhotos of cameraDvrFocusArray">
     <div class="ui card" >
       <div class="image">
         <img [src]="cameraPhotos.apiUrl" (error)="brokenImg($event)">
       </div>
       <div class="content">
-        <div class="description">
-          {{cameraPhotos.dateString}}
+        <div class="ui sub header">
+          <span class="right floated">{{cameraPhotos.dateString}}</span>
+          <span># {{cameraPhotos.elementNumber + 1}}</span>
         </div>
       </div>
       <div class="extra content" (click)="cardClickAction($event, cameraPhotos)">
@@ -106,7 +107,7 @@
     <div class="content">
       <div class="center">
       <img class="ui centered rounded huge image" [src]="cameraDvrFocusArray[enlargedElementVal].apiUrl" (error)="brokenImg($event)" (click)="hideDimmer()">
-      <div class="ui inverted header">{{cameraDvrFocusArray[enlargedElementVal].dateString}}</div>
+      <div class="ui inverted header">{{cameraDvrFocusArray[enlargedElementVal].cameraName}} (Image #{{cameraDvrFocusArray[enlargedElementVal].elementNumber + 1}}) -- {{cameraDvrFocusArray[enlargedElementVal].dateString}}</div>
       <div class="ui inverted">(Click Image to Close)</div>
       </div>
     </div>
