@@ -1,6 +1,6 @@
 <!--Start of Message Boxes-->
 <!--When a user has no recorded pictures in the db-->
-<div class="ui grid" *ngIf="cameraPhotoList.length === 0">
+<div class="ui grid" *ngIf="completeElementPhotoList.length === 0">
   <div class="two wide column"></div>
   <div class="twelve wide column">
     <div class="ui message">
@@ -30,7 +30,7 @@
   </div>
 </div>
 <div class="ui three column grid">
-  <div class="column cameras" *ngFor="let cameraPhotos of cameraPhotoList">
+  <div class="column cameras" *ngFor="let cameraPhotos of completeElementPhotoList | slice:0:3">
     <div class="ui fluid card">
       <div class="content">
         <div class="ui header centered">
