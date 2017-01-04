@@ -182,9 +182,11 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     // This refreshes the viewing camera URLs
     refreshCamViewImages() {
         if (this.router.url === "/camera/singlecamera") {
-            let tempUrlString = this.currentSingleCamera[0].cameraURL;
-            tempUrlString = tempUrlString.slice(0, tempUrlString.indexOf("?"));
-            this.currentSingleCamera[0].cameraURL = `${tempUrlString}?${new Date().getTime()}`;
+            if (this.currentSingleCamera[0] !== undefined) {
+                let tempUrlString = this.currentSingleCamera[0].cameraURL;
+                tempUrlString = tempUrlString.slice(0, tempUrlString.indexOf("?"));
+                this.currentSingleCamera[0].cameraURL = `${tempUrlString}?${new Date().getTime()}`;
+            }
         } else if (this.router.url === "/camera/multicamera") {
             for(let i = 0; i < this.viewingCameras.length; i++) {
                 let tempUrlString = this.viewingCameras[i].cameraURL;
@@ -380,6 +382,8 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
             this.captureCamFeedClock = IntervalObservable.create(sentRecordDelay*1000).subscribe(timeKeeper => {
                 this.recordCameras();
             });
+        } else {
+            this.recordCameras();
         }
     }
 
@@ -403,6 +407,11 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     // Used for replacing broken img [src] with a standard image
     brokenImg(event) {
         event.target.src = `http://${GlobalVariables.serverIP}/api/file/-1/dvrpics`;
+    }
+
+    //Checks if the input string in the record cameras field is a number or not
+    isNaN(sentInput) {
+        return Number.isNaN(Number(sentInput));
     }
 
 }

@@ -77,8 +77,10 @@
       <p>Multiple cameras can have their streams recorded at a timed interval</p>
       <ul class="list">
         <li>Click on a camera name to add it to the recording panel, click the name again to remove it</li>
-        <li>Enter any time greater than 5 seconds in the <strong>sec per capture</strong> field and click <strong>Update Recording Cameras</strong> to start recording their streams</li>
+        <li>Enter any time greater than 5 seconds into the <strong>sec per capture</strong> field and click <strong>Update Recording Cameras</strong> to start recording their streams</li>
+        <li>Enter less than 5 seconds (or no value) into the <strong>sec per capture</strong> field and click <strong>Update Recording Cameras</strong> to save a single snapshot of selected streams</li>
         <li>To stop recording, click the <strong>Stop Recording</strong> button</li>
+        <li>Streams will be recorded while <strong>Multi-Camera</strong>, <strong>Single Camera</strong>, or <strong>Record Feeds</strong>. Leaving those screens halts recording</li>
         <li>NOTE: Camera streams can be dynamically added/removed while the recording is taking place</li>
       </ul>
     </div>
@@ -181,7 +183,7 @@
       <table class="ui celled striped table" *ngIf="recordingCameras.length !== 0">
         <thead>
           <tr> 
-            <th class="ui header" colspan="3">Cam Feeds Recorded</th>
+            <th class="ui header" colspan="3">Record These Cameras</th>
           </tr>
           <tr>
             <th class="ui center aligned">Cam #</th>
@@ -201,15 +203,19 @@
             <th></th>
             <th>
               <div class="ui right floated right labeled fluid input">
-                <input type="text" #delayTime placeholder="Record Frequency (5s or greater)">
+                <input type="text" #delayTime placeholder="Record Delay (5+ s)" (keyup)="delayTime">
                 <div class="ui basic label">
                   sec per capture
                 </div>
               </div>
             </th>
             <th class="ui center aligned">
-              <div class="ui green button" (click)="startRecordCamerasTimer(delayTime.value)">Update Recording</div>
-              <div class="ui red button" (click)="stopRecordCamerasTimer()">Stop Recording</div>
+              <div class="two ui buttons">
+                <div class="ui green button" *ngIf="delayTime.value > 4" (click)="startRecordCamerasTimer(delayTime.value)">Record Every {{delayTime.value}}s</div>
+                <div class="ui green button" *ngIf="delayTime.value < 5" (click)="startRecordCamerasTimer(delayTime.value)">Single Snapshot</div>
+                <div class="ui green button disabled" *ngIf="isNaN(delayTime.value)">Invalid Time</div>
+                <div class="ui red button" (click)="stopRecordCamerasTimer()">Stop Recording</div>
+              </div>
             </th>
           </tr>
         </tfoot>
