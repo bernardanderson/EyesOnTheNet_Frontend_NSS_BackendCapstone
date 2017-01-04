@@ -24,8 +24,8 @@ interface LargePhotoElement {
         cameraId: number,
         cameraName: string,
         photoIdTime: {
-            key: number,
-            value: number
+            key: number,                        // key = photoId
+            value: number                       // value = time in seconds
         }[]
         };
 
@@ -43,7 +43,6 @@ export class DVRComponent implements OnInit, OnDestroy {
     menuSubscription: Subscription;    // Needed for menu communication
 
     completeElementPhotoList: LargePhotoElement[] = [];  // Holds all cameras returned from the BE
-    cameraPhotoList: LargePhotoElement[] = [];           // Element for the three item camera list 
 
     cameraDvrFocusArray: SimpleDvrPhotoElement[] = [];   // Holds the array of photos for the selected camera
     
@@ -73,7 +72,6 @@ export class DVRComponent implements OnInit, OnDestroy {
             .subscribe(
                 data => {
                     this.completeElementPhotoList = data;
-                    this.setThreeElementCameraArray(); 
                     },
                 err => { console.log(err) })
     }
@@ -92,34 +90,12 @@ export class DVRComponent implements OnInit, OnDestroy {
         return formattedDateString;
     }
 
-    // Initially builds the three camera array 
-    setThreeElementCameraArray() {
-        if (this.completeElementPhotoList.length < 3) {
-            for (let i = 0; i < this.completeElementPhotoList.length; i++ ) {
-                this.cameraPhotoList.push(this.completeElementPhotoList[i]);
-            }
-        } else if (this.completeElementPhotoList.length > 3) {
-            for (let i = 0; i < 3; i++ ) {
-                this.cameraPhotoList.push(this.completeElementPhotoList[0]);
-                this.completeElementPhotoList.push(this.completeElementPhotoList.shift());
-            }
-        }
-    }
-
-    // Cycles through the recorded cameras to only keep three viewable at a time
+    // Cycles through the recorded cameras
     changeCameraArray(sentDirection) {
-        if (this.completeElementPhotoList.length > 3) {
-            if (sentDirection === "back"){
-                this.cameraPhotoList.pop();
-                let firstElementIndex = this.completeElementPhotoList.indexOf(this.cameraPhotoList[0]);
-
-                this.cameraPhotoList.unshift(this.completeElementPhotoList[firstElementIndex - 1])
-                this.completeElementPhotoList.unshift(this.completeElementPhotoList.pop());
-            } else if (sentDirection === "forward") {
-                let tempShift = this.cameraPhotoList.shift();
-                this.cameraPhotoList.push(this.completeElementPhotoList[0]);
-                this.completeElementPhotoList.push(this.completeElementPhotoList.shift());
-            }
+        if (sentDirection === "back"){
+            this.completeElementPhotoList.unshift(this.completeElementPhotoList.pop());
+        } else if (sentDirection === "forward") {
+            this.completeElementPhotoList.push(this.completeElementPhotoList.shift());
         }
     }
 
@@ -144,9 +120,10 @@ export class DVRComponent implements OnInit, OnDestroy {
         event.target.src = `http://${GlobalVariables.serverIP}/api/file/-1/dvrpics`;
     }
 
-    // Checks for the photo events of Delete or Enlarge
+    // Checks for the photo click events of Delete or Enlarge
     cardClickAction(event, sentCameraPhotoInfo) {
         let cardClickedOption: string = "";
+
         this.enlargedElementVal = 0;
         if (event.target.tagName === "I"){
             cardClickedOption = event.target.parentElement.innerText.substring(1);
@@ -164,17 +141,39 @@ export class DVRComponent implements OnInit, OnDestroy {
 
     // Deletes a camera from the Db
     deleteCameraPicture(sentCameraPhotoInfo) {
+
         this.httpRequestService.deleteCamera(`api/file/${sentCameraPhotoInfo.photoId}`)
         .subscribe(
             data => {
-                // With successful photo delete, resets the camera pictures list
                 
+                // Deletes the photo from the 
                 let deletedPhotoIndex = this.cameraDvrFocusArray.indexOf(sentCameraPhotoInfo);
                 if (deletedPhotoIndex !== -1) {
                     this.cameraDvrFocusArray.splice(deletedPhotoIndex, 1);
                 }
-                //this.completeElementPhotoList.indexOf()
-                console.log("Photo Deleted", data);
+
+                let cameraElement: LargePhotoElement = null;
+                // Searches for the camera of the deleted photo in the complete photoarray
+                for (let i = 0; i < this.completeElementPhotoList.length; i++) {
+                    if (this.completeElementPhotoList[i].cameraName === sentCameraPhotoInfo.cameraName) {
+                        cameraElement = this.completeElementPhotoList[i];
+
+                        // Searches for the photo in the camera in the complete photoarray
+                        for (let i = 0; i < cameraElement.photoIdTime.length; i++) {
+                            if (cameraElement.photoIdTime[i].key === sentCameraPhotoInfo.photoId) {
+                                cameraElement.photoIdTime.splice(i,1);
+
+                                // If all photos are removed from the camera, that camera is removed from the viewable photos list 
+                                if (cameraElement.photoIdTime.length === 0) {
+                                    let index = this.completeElementPhotoList.indexOf(cameraElement);
+                                    this.completeElementPhotoList.splice(index, 1);
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
             },
             err => {
                 console.log(err);
