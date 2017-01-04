@@ -14,7 +14,6 @@ declare var $: any;
 
 interface SimpleDvrPhotoElement {                // Holds the selected cameras DVR recordings 
     photoId: number,
-    elementNumber: number,
     cameraName: string,
     apiUrl: string,
     dateString: string
@@ -121,7 +120,7 @@ export class DVRComponent implements OnInit, OnDestroy {
     }
 
     // Checks for the photo click events of Delete or Enlarge
-    cardClickAction(event, sentCameraPhotoInfo) {
+    cardClickAction(event, sentCameraPhotoInfo, indexNumber) {
         let cardClickedOption: string = "";
 
         this.enlargedElementVal = 0;
@@ -132,25 +131,21 @@ export class DVRComponent implements OnInit, OnDestroy {
         }
      
         if (cardClickedOption === "Delete") {
-            this.deleteCameraPicture(sentCameraPhotoInfo);
+            this.deleteCameraPicture(sentCameraPhotoInfo, indexNumber);
         } else if ( cardClickedOption === "Enlarge") {
-            this.enlargedElementVal = sentCameraPhotoInfo.elementNumber;
+            this.enlargedElementVal = indexNumber;
             $('.ui.four.column.grid').dimmer('show');
         }
     }
 
     // Deletes a camera from the Db
-    deleteCameraPicture(sentCameraPhotoInfo) {
+    deleteCameraPicture(sentCameraPhotoInfo, sentIndexNumber) {
 
         this.httpRequestService.deleteCamera(`api/file/${sentCameraPhotoInfo.photoId}`)
         .subscribe(
             data => {
-                
-                // Deletes the photo from the 
-                let deletedPhotoIndex = this.cameraDvrFocusArray.indexOf(sentCameraPhotoInfo);
-                if (deletedPhotoIndex !== -1) {
-                    this.cameraDvrFocusArray.splice(deletedPhotoIndex, 1);
-                }
+                // Deletes the photo from the cameraArray
+                this.cameraDvrFocusArray.splice(sentIndexNumber, 1);
 
                 let cameraElement: LargePhotoElement = null;
                 // Searches for the camera of the deleted photo in the complete photoarray

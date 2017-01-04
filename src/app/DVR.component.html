@@ -71,7 +71,7 @@
   </div>
 </div>
 <div class="ui four column grid" *ngIf="cameraDvrFocusArray.length > 0">
-  <div class="column" *ngFor="let cameraPhotos of cameraDvrFocusArray">
+  <div class="column" *ngFor="let cameraPhotos of cameraDvrFocusArray; let i = index;">
     <div class="ui card" >
       <div class="image">
         <img [src]="cameraPhotos.apiUrl" (error)="brokenImg($event)">
@@ -79,10 +79,10 @@
       <div class="content">
         <div class="ui sub header">
           <span class="right floated">{{cameraPhotos.dateString}}</span>
-          <span># {{cameraPhotos.elementNumber + 1}}</span>
+          <span># {{i + 1}}</span>
         </div>
       </div>
-      <div class="extra content" (click)="cardClickAction($event, cameraPhotos)">
+      <div class="extra content" (click)="cardClickAction($event, cameraPhotos, i)">
         <a class="right floated">
           <i class="trash outline small icon"></i> 
           Delete
@@ -99,7 +99,7 @@
     <div class="content">
       <div class="center">
       <img class="ui centered rounded huge image" [src]="cameraDvrFocusArray[enlargedElementVal].apiUrl" (error)="brokenImg($event)" (click)="hideDimmer()">
-      <div class="ui inverted header">{{cameraDvrFocusArray[enlargedElementVal].cameraName}} (Image #{{cameraDvrFocusArray[enlargedElementVal].elementNumber + 1}}) -- {{cameraDvrFocusArray[enlargedElementVal].dateString}}</div>
+      <div class="ui inverted header">{{cameraDvrFocusArray[enlargedElementVal].cameraName}} (Image #{{enlargedElementVal + 1}}) -- {{cameraDvrFocusArray[enlargedElementVal].dateString}}</div>
       <div class="ui inverted">(Click Image to Close)</div>
       </div>
     </div>
