@@ -134,6 +134,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
       this.httpRequestService.getAccess(`api/camera/${sentCamera.cameraIdHash}/singlecamera`)
         .subscribe(
         data => {
+            this.resetAddEditCameraObject();
             this.addEditCamera = data;
             this.addEditCamera.webAddress = this.addEditCamera.webAddress.slice(7);  // Removes the 'http://' from the edited Camera WebURL
             this.initAddEditModal();
@@ -288,10 +289,12 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
               // If camera already exists, update the current camera element in array, otherwise add the new camera to array 
               if (data.cameraIdHash == this.userCameraList[i].cameraIdHash) {
                 this.userCameraList[i] = data;
+                this.resetAddEditCameraObject();
                 $('.ui.modal.addcamera').modal('hide');
                 return true;
               }
             }
+            this.resetAddEditCameraObject();
             $('.ui.modal.addcamera').modal('hide');
             this.userCameraList.push(data);   // If successfully added, Db returns the simplified "new" Camera.
             return true;
