@@ -3,7 +3,8 @@
 
  export const GlobalVariables = Object.freeze({
      //serverIP: '192.168.56.102:5000', // Laptop
-     //serverIP: '192.168.0.229:5000',  // PC
+     //serverIP: '192.168.0.229:5000'  // PC
+     //serverIP: '192.168.0.229'  // PC Through NGINX
      serverIP: 'api.eyesonthenet.com'   // Production
      //... more of your variables
  });

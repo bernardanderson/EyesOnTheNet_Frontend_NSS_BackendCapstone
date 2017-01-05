@@ -38,14 +38,13 @@ export class LoginComponent {
     let httpRequestConf: IHttpRequestConf = {
       apiPath: 'token',
       bodyData: `username=${sentUserName}&password=${sentUserPassword}`,
-      returnType: 'Json',
+      returnType: 'text',
       specialHeaders: [{ 'Content-Type': 'application/x-www-form-urlencoded' }],
-      withCredentials: false
+      withCredentials: true  // this needs to be true or the browser won't get the returned cookie
     }
 
     this.httpRequestService.postAccess(httpRequestConf).subscribe(
       data => {
-        this.cookieBuilder(data); // Builds the JWT cookie
         this.router.navigateByUrl("/camera/multicamera");
       },
       err => {
