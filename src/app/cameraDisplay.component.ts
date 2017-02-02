@@ -91,13 +91,8 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         googleMapURL: string
     } [] = [];
 
-    recordingCameras: {                // Array of which cameras are currently being recorded
-        cameraIdHash: number,
-        cameraURL: string,
-        name: string,
-        location: string
-    } [] = [];
-
+    recordingCameras: {} [] = [];              // Array of which cameras are currently being recorded
+    
     ngOnInit() {
         this.menuService.activateMenu(true);    // Shows the nav-menu on page load
         this.getCameraList();                   // Pulls the users cameras on page load
@@ -364,30 +359,23 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
             })
     }
 
+
+///////////
     // Adds or removes a single camera to/from the RecordingCameras Array
-    singleCameraToRecordingCamerasArray(sentCamera) {
-        sentCamera.cameraURL =`http://${GlobalVariables.serverIP}/api/camera/${sentCamera.cameraIdHash}/snapshot?${new Date().getTime()}`;
-        for (let i=0; i < this.recordingCameras.length; i++) {
-            if (this.recordingCameras[i].cameraIdHash === sentCamera.cameraIdHash) {
-                this.recordingCameras.splice(this.recordingCameras.indexOf(sentCamera), 1);
-                return true;
-            }
+    singleCameraToRecordingCamerasArray(sentCameraIdAndDelay) {
+        
+        let httpRequestConf: IHttpRequestConf = {
+            apiPath: 'api/camera/recordcamera',
+            bodyData: JSON.stringify(sentCameraIdAndDelay),
+            returnType: 'Json',
+            specialHeaders: [{ 'Content-Type': 'application/json' }],
+            withCredentials: true
         }
-        this.recordingCameras.push(sentCamera);
-    }
 
-    // Has the backend take and store a snapshot of the selected camera feeds
-    startRecordCamerasTimer(sentRecordDelay) {
-
-        this.stopRecordCamerasTimer();
-
-        if (sentRecordDelay > 4 && this.recordingCameras.length > 0) {
-            this.captureCamFeedClock = IntervalObservable.create(sentRecordDelay*1000).subscribe(timeKeeper => {
-                this.recordCameras();
-            });
-        } else {
-            this.recordCameras();
-        }
+        this.httpRequestService.postAccess(httpRequestConf)
+            .subscribe(
+            data => console.log(data));
+        this.recordingCameras.push(sentCameraIdAndDelay);
     }
 
     // Has the front end stop recording snapshots of the selected camera feeds
@@ -397,15 +385,20 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         }
     }
 
+    //// May not need this
     // Starts the recording of Cameras
     recordCameras() {
         for (let i = 0; i < this.recordingCameras.length; i++) {
-            this.httpRequestService.getAccess(`api/file/${this.recordingCameras[i].cameraIdHash}`)
+            this.httpRequestService.getAccess(`api/file/sentCameraIdAndDelay.cameraIdHash}`)
             .subscribe(
                 data => { },
                 err => { }
             )}
     }
+/////////
+
+
+
 
     // Used for replacing broken img [src] with a standard image
     brokenImg(event) {
