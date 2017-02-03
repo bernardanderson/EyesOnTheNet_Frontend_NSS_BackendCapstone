@@ -179,28 +179,38 @@
     </div>
 
     <!--The view for the record camera-->
-    <div *ngSwitchCase="'/camera/record'">
+    <div *ngSwitchCase="'/camera/record'" >
       <table class="ui celled striped table" *ngIf="recordingCameras.length !== 0">
         <thead>
           <tr> 
-            <th class="ui header" colspan="3">Record These Cameras</th>
+            <th class="ui header" colspan="4">Record These Cameras</th>
           </tr>
           <tr>
             <th class="ui center aligned">Cam #</th>
             <th class="ui center aligned">Camera Name</th>
-            <th class="ui center aligned">Thumbnail</th>
+            <th class="ui center aligned">Camera Delay<br/>(5 seconds or higher)</th>
+            <th class="ui center aligned">Record Action</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let oneRecordingCamera of recordingCameras; let i = index">
             <td class="ui center aligned">{{i + 1}}</td>
             <td class="ui center aligned">{{oneRecordingCamera.name}}</td>
-            <td><img class="ui rounded image small centered" [src]="oneRecordingCamera.cameraURL" (error)="brokenImg($event)"/></td>
+            <td>
+              <div class="ui fluid input">
+                <input type="text" placeholder="Delay">
+              </div>
+            </td>
+            <td class="ui center aligned">
+              <div class="ui button" (click)="recordThisCamera(oneRecordingCamera)">
+                <i class="record icon"></i>
+                Record
+              </div>
+            </td>
           </tr>
         </tbody>
         <tfoot>
           <tr>
-            <th></th>
             <th>
               <div class="ui right floated right labeled fluid input">
                 <input type="text" #delayTime placeholder="Record Delay (5+ s)" (keyup)="delayTime">
