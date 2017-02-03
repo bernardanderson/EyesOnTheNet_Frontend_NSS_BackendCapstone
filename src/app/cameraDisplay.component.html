@@ -198,35 +198,19 @@
             <td class="ui center aligned">{{oneRecordingCamera.name}}</td>
             <td>
               <div class="ui fluid input">
-                <input type="text" placeholder="Delay">
+                <input type="text" placeholder="Delay" [(ngModel)]="oneRecordingCamera.delay">
               </div>
             </td>
             <td class="ui center aligned">
-              <div class="ui button" (click)="recordThisCamera(oneRecordingCamera)">
-                <i class="record icon"></i>
-                Record
-              </div>
+              <div class="ui button" *ngIf="oneRecordingCamera.delay < 5" (click)="singleSnapshotRecord(oneRecordingCamera) "> <i class="record icon"></i>Single</div>
+              <div class="ui green button" *ngIf="oneRecordingCamera.delay > 4" (click)="recordThisCamera(oneRecordingCamera)"><i class="record icon"></i>Record</div>
+              <div class="ui button disabled" *ngIf="isNaN(oneRecordingCamera.delay)">Invalid Time</div>
             </td>
           </tr>
         </tbody>
         <tfoot>
           <tr>
-            <th>
-              <div class="ui right floated right labeled fluid input">
-                <input type="text" #delayTime placeholder="Record Delay (5+ s)" (keyup)="delayTime">
-                <div class="ui basic label">
-                  sec per capture
-                </div>
-              </div>
-            </th>
-            <th class="ui center aligned">
-              <div class="two ui buttons">
-                <div class="ui green button" *ngIf="delayTime.value > 4" (click)="startRecordCamerasTimer(delayTime.value)">Record Every {{delayTime.value}}s</div>
-                <div class="ui green button" *ngIf="delayTime.value < 5" (click)="startRecordCamerasTimer(delayTime.value)">Single Snapshot</div>
-                <div class="ui green button disabled" *ngIf="isNaN(delayTime.value)">Invalid Time</div>
-                <div class="ui red button" (click)="stopRecordCamerasTimer()">Stop Recording</div>
-              </div>
-            </th>
+            <th colspan="4"></th>
           </tr>
         </tfoot>
       </table>

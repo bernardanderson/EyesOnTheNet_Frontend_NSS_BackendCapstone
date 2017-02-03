@@ -378,7 +378,9 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
                 err => { }
     )}
 
-    recordThisCamera(sentCameraIdAndDelay) {
+    recordThisCamera(sentCamera) {
+
+        console.log(sentCamera);
 
 /*
         let httpRequestConf: IHttpRequestConf = {
@@ -402,13 +404,13 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
 
     // Adds or removes a single camera to/from the RecordingCameras Array
     singleCameraToRecordingCamerasArray(sentCameraToRecord) {
+        sentCameraToRecord.delay = 0;
 
         if (this.recordingCameras.indexOf(sentCameraToRecord) === -1) {
             this.recordingCameras.push(sentCameraToRecord);
         } else {
             this.recordingCameras.splice(this.recordingCameras.indexOf(sentCameraToRecord), 1);
         }
-        console.log(this.recordingCameras);
 }
 
     // Has the front end stop recording snapshots of the selected camera feeds
@@ -420,13 +422,12 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
 
     //// May not need this
     // Starts the recording of Cameras
-    recordCameras() {
-        for (let i = 0; i < this.recordingCameras.length; i++) {
-            this.httpRequestService.getAccess(`api/file/sentCameraIdAndDelay.cameraIdHash}`)
+    singleSnapshotRecord(sentCamera) {
+            this.httpRequestService.getAccess(`api/file/${sentCamera.cameraIdHash}`)
             .subscribe(
-                data => { },
+                data => { console.log(data) },
                 err => { }
-            )}
+            )
     }
 /////////
 
