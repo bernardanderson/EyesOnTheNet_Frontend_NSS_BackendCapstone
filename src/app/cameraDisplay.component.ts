@@ -105,7 +105,6 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     // Prevents memory leakage when this view is destroyed
     ngOnDestroy() {
         this.menuSubscription.unsubscribe(); // Stops the menu Subscription 
-        this.stopRecordCamerasTimer(); // Stops any recordings upon leaving the camera views
     }
 
     // The formatted constructor receives the menu information when changed in parent
@@ -380,12 +379,14 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
 
     recordThisCamera(sentCamera) {
 
-        console.log(sentCamera);
+        let recordCamModel = {
+            recordDelay: sentCamera.delay,
+            recordingCameraId: sentCamera.cameraIdHash
+        }
 
-/*
         let httpRequestConf: IHttpRequestConf = {
             apiPath: 'api/camera/recordcamera',
-            bodyData: JSON.stringify(sentCameraIdAndDelay),
+            bodyData: JSON.stringify(recordCamModel),
             returnType: 'Json',
             specialHeaders: [{ 'Content-Type': 'application/json' }],
             withCredentials: true
@@ -394,13 +395,14 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         this.httpRequestService.postAccess(httpRequestConf)
             .subscribe(
             data => {
-                console.log(data);
-                this.recordingCameras.push(sentCameraIdAndDelay);
-            });
-*/  
+                console.log("Recording: ", data);
+            },
+                err => {
+                console.log("Error: ", err);
+                    
+                 }
+            );
   }
-
-
 
     // Adds or removes a single camera to/from the RecordingCameras Array
     singleCameraToRecordingCamerasArray(sentCameraToRecord) {
@@ -414,7 +416,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
 }
 
     // Has the front end stop recording snapshots of the selected camera feeds
-    stopRecordCamerasTimer() {
+    stopRecordingCamera() {
         if (this.captureCamFeedClock !== undefined) {
             this.captureCamFeedClock.unsubscribe();
         }
