@@ -46,6 +46,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     userCameraList: {
       cameraIdHash: number,
       name: string,
+      delay: number,
       location: string
     }[] = [];                              // Array of Possible User Cameras
 
@@ -91,12 +92,8 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         googleMapURL: string
     } [] = [];
 
-    recordingCameras: {
-     } [] = [];              // Array of which cameras are currently being recorded
+    recordingCameras: {}[] = [];              // Array of which cameras are currently being recorded
     
-    serverRecordingCameras: {}[]=[]; // The array of cameras actually being recorded on the server
-
-
     ngOnInit() {
         this.menuService.activateMenu(true);    // Shows the nav-menu on page load
         this.getCameraList();                   // Pulls the users cameras on page load
@@ -373,7 +370,17 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
 
         this.httpRequestService.getAccess(`api/camera/displaytasks`)
         .subscribe(
-                data => this.recordingCameras = data,
+                data => { 
+                    this.recordingCameras = [];
+                    data.forEach(element => {
+                        for (var i = 0; i < this.userCameraList.length; i++) {
+                            if (element.recordingCameraId.toString() === this.userCameraList[i].cameraIdHash) {
+                                this.userCameraList[i].delay = element.recordingDelay;
+                                this.recordingCameras.push(this.userCameraList[i]);
+                            }
+                        }
+                    });
+                 },
                 err => { }
     )}
 
@@ -395,14 +402,11 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         this.httpRequestService.postAccess(httpRequestConf)
             .subscribe(
             data => {
-                console.log("Recording: ", data);
             },
                 err => {
-                console.log("Error: ", err);
-                    
                  }
             );
-  }
+    }
 
     // Adds or removes a single camera to/from the RecordingCameras Array
     singleCameraToRecordingCamerasArray(sentCameraToRecord) {
@@ -413,17 +417,22 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         } else {
             this.recordingCameras.splice(this.recordingCameras.indexOf(sentCameraToRecord), 1);
         }
-}
-
-    // Has the front end stop recording snapshots of the selected camera feeds
-    stopRecordingCamera() {
-        if (this.captureCamFeedClock !== undefined) {
-            this.captureCamFeedClock.unsubscribe();
-        }
     }
 
-    //// May not need this
-    // Starts the recording of Cameras
+    isCameraBeingRecorded(sentCameraToRecord) {
+        return true;
+    }
+
+    // Has the front end stop recording snapshots of the selected camera feeds
+    stopRecordingCamera(sentCameraToStop) {
+        this.httpRequestService.getAccess(`api/camera/stoprecording/${sentCameraToStop.cameraIdHash}`)
+            .subscribe(
+                data => { },
+                err => { }
+            )
+    }
+
+    // Takes a single snapshot of a selected camera
     singleSnapshotRecord(sentCamera) {
             this.httpRequestService.getAccess(`api/file/${sentCamera.cameraIdHash}`)
             .subscribe(

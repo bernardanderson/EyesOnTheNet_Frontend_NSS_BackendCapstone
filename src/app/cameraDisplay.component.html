@@ -202,9 +202,11 @@
               </div>
             </td>
             <td class="ui center aligned">
-              <div class="ui button" *ngIf="oneRecordingCamera.delay < 5" (click)="singleSnapshotRecord(oneRecordingCamera) "> <i class="record icon"></i>Single</div>
-              <div class="ui green button" *ngIf="oneRecordingCamera.delay > 4" (click)="recordThisCamera(oneRecordingCamera)"><i class="record icon"></i>Record</div>
-              <div class="ui button disabled" *ngIf="isNaN(oneRecordingCamera.delay)">Invalid Time</div>
+              <div class="ui blue specwidth button" *ngIf="oneRecordingCamera.delay < 5" (click)="singleSnapshotRecord(oneRecordingCamera)"> <i class="record icon"></i>Single</div>
+              <div class="ui green specwidth button" *ngIf="oneRecordingCamera.delay > 4" (click)="recordThisCamera(oneRecordingCamera)"><i class="record icon"></i>Record</div>
+              <div class="ui button specwidth disabled" *ngIf="isNaN(oneRecordingCamera.delay)">Invalid Time</div>
+              <div class="ui red specwidth button" *ngIf="isCameraBeingRecorded(oneRecordingCamera)" (click)="stopRecordingCamera(oneRecordingCamera)">Stop Recording</div>
+              <div class="ui specwidth button disabled" *ngIf="!isCameraBeingRecorded(oneRecordingCamera)">Stop Recording</div>
             </td>
           </tr>
         </tbody>
