@@ -179,44 +179,40 @@
     </div>
 
     <!--The view for the record camera-->
-    <div *ngSwitchCase="'/camera/record'">
+    <div *ngSwitchCase="'/camera/record'" >
       <table class="ui celled striped table" *ngIf="recordingCameras.length !== 0">
         <thead>
           <tr> 
-            <th class="ui header" colspan="3">Record These Cameras</th>
+            <th class="ui header" colspan="4">Record These Cameras</th>
           </tr>
           <tr>
             <th class="ui center aligned">Cam #</th>
             <th class="ui center aligned">Camera Name</th>
-            <th class="ui center aligned">Thumbnail</th>
+            <th class="ui center aligned">Camera Delay<br/>(5 seconds or higher)</th>
+            <th class="ui center aligned">Record Action</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let oneRecordingCamera of recordingCameras; let i = index">
             <td class="ui center aligned">{{i + 1}}</td>
             <td class="ui center aligned">{{oneRecordingCamera.name}}</td>
-            <td><img class="ui rounded image small centered" [src]="oneRecordingCamera.cameraURL" (error)="brokenImg($event)"/></td>
+            <td>
+              <div class="ui fluid input">
+                <input type="text" placeholder="Delay" [(ngModel)]="oneRecordingCamera.delay">
+              </div>
+            </td>
+            <td class="ui center aligned">
+              <div class="ui blue specwidth button" *ngIf="oneRecordingCamera.delay < 5" (click)="singleSnapshotRecord(oneRecordingCamera)"> <i class="record icon"></i>Single</div>
+              <div class="ui green specwidth button" *ngIf="oneRecordingCamera.delay > 4" (click)="recordThisCamera(oneRecordingCamera)"><i class="record icon"></i>Record</div>
+              <div class="ui button specwidth disabled" *ngIf="isNaN(oneRecordingCamera.delay)">Invalid Time</div>
+              <div class="ui red specwidth button" *ngIf="isCameraBeingRecorded(oneRecordingCamera)" (click)="stopRecordingCamera(oneRecordingCamera)">Stop Recording</div>
+              <div class="ui specwidth button disabled" *ngIf="!isCameraBeingRecorded(oneRecordingCamera)">Stop Recording</div>
+            </td>
           </tr>
         </tbody>
         <tfoot>
           <tr>
-            <th></th>
-            <th>
-              <div class="ui right floated right labeled fluid input">
-                <input type="text" #delayTime placeholder="Record Delay (5+ s)" (keyup)="delayTime">
-                <div class="ui basic label">
-                  sec per capture
-                </div>
-              </div>
-            </th>
-            <th class="ui center aligned">
-              <div class="two ui buttons">
-                <div class="ui green button" *ngIf="delayTime.value > 4" (click)="startRecordCamerasTimer(delayTime.value)">Record Every {{delayTime.value}}s</div>
-                <div class="ui green button" *ngIf="delayTime.value < 5" (click)="startRecordCamerasTimer(delayTime.value)">Single Snapshot</div>
-                <div class="ui green button disabled" *ngIf="isNaN(delayTime.value)">Invalid Time</div>
-                <div class="ui red button" (click)="stopRecordCamerasTimer()">Stop Recording</div>
-              </div>
-            </th>
+            <th colspan="4"></th>
           </tr>
         </tfoot>
       </table>

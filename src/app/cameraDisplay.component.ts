@@ -46,6 +46,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     userCameraList: {
       cameraIdHash: number,
       name: string,
+      delay: number,
       location: string
     }[] = [];                              // Array of Possible User Cameras
 
@@ -91,13 +92,8 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
         googleMapURL: string
     } [] = [];
 
-    recordingCameras: {                // Array of which cameras are currently being recorded
-        cameraIdHash: number,
-        cameraURL: string,
-        name: string,
-        location: string
-    } [] = [];
-
+    recordingCameras: {}[] = [];              // Array of which cameras are currently being recorded
+    
     ngOnInit() {
         this.menuService.activateMenu(true);    // Shows the nav-menu on page load
         this.getCameraList();                   // Pulls the users cameras on page load
@@ -106,7 +102,6 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
     // Prevents memory leakage when this view is destroyed
     ngOnDestroy() {
         this.menuSubscription.unsubscribe(); // Stops the menu Subscription 
-        this.stopRecordCamerasTimer(); // Stops any recordings upon leaving the camera views
     }
 
     // The formatted constructor receives the menu information when changed in parent
@@ -117,6 +112,10 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
             if (menuItem === "Add Camera"){
                 this.resetAddEditCameraObject();
                 this.initAddEditModal();
+            }
+            if (menuItem === "Record Feeds") {
+                this.getCurrentlyRecordingCamerasFromServer();
+                console.log("You loaded record")
             }
         });
     }
@@ -364,48 +363,84 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
             })
     }
 
-    // Adds or removes a single camera to/from the RecordingCameras Array
-    singleCameraToRecordingCamerasArray(sentCamera) {
-        sentCamera.cameraURL =`http://${GlobalVariables.serverIP}/api/camera/${sentCamera.cameraIdHash}/snapshot?${new Date().getTime()}`;
-        for (let i=0; i < this.recordingCameras.length; i++) {
-            if (this.recordingCameras[i].cameraIdHash === sentCamera.cameraIdHash) {
-                this.recordingCameras.splice(this.recordingCameras.indexOf(sentCamera), 1);
-                return true;
-            }
+
+///////////
+
+    getCurrentlyRecordingCamerasFromServer() {
+
+        this.httpRequestService.getAccess(`api/camera/displaytasks`)
+        .subscribe(
+                data => { 
+                    this.recordingCameras = [];
+                    data.forEach(element => {
+                        for (var i = 0; i < this.userCameraList.length; i++) {
+                            if (element.recordingCameraId.toString() === this.userCameraList[i].cameraIdHash) {
+                                this.userCameraList[i].delay = element.recordingDelay;
+                                this.recordingCameras.push(this.userCameraList[i]);
+                            }
+                        }
+                    });
+                 },
+                err => { }
+    )}
+
+    recordThisCamera(sentCamera) {
+
+        let recordCamModel = {
+            recordDelay: sentCamera.delay,
+            recordingCameraId: sentCamera.cameraIdHash
         }
-        this.recordingCameras.push(sentCamera);
+
+        let httpRequestConf: IHttpRequestConf = {
+            apiPath: 'api/camera/recordcamera',
+            bodyData: JSON.stringify(recordCamModel),
+            returnType: 'Json',
+            specialHeaders: [{ 'Content-Type': 'application/json' }],
+            withCredentials: true
+        }
+
+        this.httpRequestService.postAccess(httpRequestConf)
+            .subscribe(
+            data => {
+            },
+                err => {
+                 }
+            );
     }
 
-    // Has the backend take and store a snapshot of the selected camera feeds
-    startRecordCamerasTimer(sentRecordDelay) {
+    // Adds or removes a single camera to/from the RecordingCameras Array
+    singleCameraToRecordingCamerasArray(sentCameraToRecord) {
+        sentCameraToRecord.delay = 0;
 
-        this.stopRecordCamerasTimer();
-
-        if (sentRecordDelay > 4 && this.recordingCameras.length > 0) {
-            this.captureCamFeedClock = IntervalObservable.create(sentRecordDelay*1000).subscribe(timeKeeper => {
-                this.recordCameras();
-            });
+        if (this.recordingCameras.indexOf(sentCameraToRecord) === -1) {
+            this.recordingCameras.push(sentCameraToRecord);
         } else {
-            this.recordCameras();
+            this.recordingCameras.splice(this.recordingCameras.indexOf(sentCameraToRecord), 1);
         }
+    }
+
+    isCameraBeingRecorded(sentCameraToRecord) {
+        return true;
     }
 
     // Has the front end stop recording snapshots of the selected camera feeds
-    stopRecordCamerasTimer() {
-        if (this.captureCamFeedClock !== undefined) {
-            this.captureCamFeedClock.unsubscribe();
-        }
-    }
-
-    // Starts the recording of Cameras
-    recordCameras() {
-        for (let i = 0; i < this.recordingCameras.length; i++) {
-            this.httpRequestService.getAccess(`api/file/${this.recordingCameras[i].cameraIdHash}`)
+    stopRecordingCamera(sentCameraToStop) {
+        this.httpRequestService.getAccess(`api/camera/stoprecording/${sentCameraToStop.cameraIdHash}`)
             .subscribe(
                 data => { },
                 err => { }
-            )}
+            )
     }
+
+    // Takes a single snapshot of a selected camera
+    singleSnapshotRecord(sentCamera) {
+            this.httpRequestService.getAccess(`api/file/${sentCamera.cameraIdHash}`)
+            .subscribe(
+                data => { console.log(data) },
+                err => { }
+            )
+    }
+/////////
 
     // Used for replacing broken img [src] with a standard image
     brokenImg(event) {
