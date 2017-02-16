@@ -1,0 +1,325 @@
+<div class="ui grid">
+  <div class="three wide column">
+    <div class="ui vertical menu">
+      <div class="item">
+        <div class="ui icon input">
+          <input type="text" placeholder="Search..." #cameraTerm (keyup)="cameraTerm">
+          <i class="search icon"></i>
+        </div>
+      </div>
+
+      <div class="item">
+
+        <div class="ui button fluid" *ngIf="router.url!=='/camera/record'" (click)="refreshTimer()">
+          <i class="wait icon"></i>
+            Refresh All: {{refreshTimerOptions[0].message}}
+        </div>
+
+        <div class="ui button disabled fluid" *ngIf="router.url==='/camera/record'">
+          <i class="wait icon"></i>
+            Refresh Disabled
+        </div>
+
+
+        <h5 class="ui tiny grey center aligned header">
+          Available Cameras
+        </h5>
+      </div>
+
+      <a class="item" *ngFor="let camera of (userCameraList | cameraSearchPipe:cameraTerm.value)" (click)="addCamerasToView(camera)">
+        <h4 class="ui header centered">{{camera.name}}</h4>
+      </a>
+    </div>
+  </div>
+  
+  <div class="twelve wide column">
+
+  <!--Start of Message Boxes for the Different Views-->
+    <!--When a user has no cameras in the db-->
+    <div class="ui message" *ngIf="userCameraList.length === 0">
+      <div class="header">
+        Add A Camera
+      </div>
+      <p>You have no cameras available for viewing! Use the "Add Camera" icon in the upper right to add a camera!</p>
+    </div>
+
+    <!--When a user has cameras in the db but isn't looking at any in the multiview-->
+    <div class="ui message" *ngIf="userCameraList.length > 0 && viewingCameras.length === 0 && router.url === '/camera/multicamera'">
+      <div class="header">
+        From the left menu, select cameras for viewing 
+      </div>
+      <p>Multiple camera feeds can be viewed at once!</p>
+      <ul class="list">
+        <li>Click on a camera name to add it to the view panel, click again to refresh the image</li>
+        <li>You can <strong>Edit</strong>, <strong>Refresh</strong> and <strong>Close</strong> the view from the menu bar beneath each view panel</li>
+        <li>To see an enlarged camera feed (and it's location) select <strong>Expand</strong> from the menu bar under the feed</li>
+      </ul>
+    </div>
+
+    <!--When a user has cameras in the db but isn't looking at any in the singleview-->
+    <div class="ui message" *ngIf="userCameraList.length > 0 && currentSingleCamera.length === 0 && router.url === '/camera/singlecamera'">
+      <div class="header">
+        From the left menu, select a camera for enhanced viewing 
+      </div>
+      <p>You can see an enlarged view of a single camera feed!</p>
+      <ul class="list">
+        <li>Click on a camera name to add it to the view panel along with it's GeoLocation and physical address</li>
+        <li>You can Zoom In and Out on the GeoLocation panel to get a closer look at where the camera feed is located</li>
+        <li>You can <strong>Edit</strong>, <strong>Refresh</strong> and <strong>Close</strong> the view from the menu bar beneath each view panel</li>
+      </ul>
+    </div>
+
+    <!--When a user has cameras in the db but isn't recording at any in the record view-->
+    <div class="ui message" *ngIf="userCameraList.length > 0 && recordingCameras.length === 0 && router.url === '/camera/record'">
+      <div class="header">
+        From the left menu, select cameras to record their streams 
+      </div>
+      <p>Multiple cameras can have their streams recorded at a timed interval</p>
+      <ul class="list">
+        <li>Click on a camera name to add it to the recording panel, click the name again to remove it</li>
+        <li>Enter any time greater than 5 seconds into the <strong>sec per capture</strong> field and click the <strong>Green Record Button</strong> to start recording their streams</li>
+        <li>Enter less than 5 seconds (or no value) into the <strong>sec per capture</strong> field and click <strong>Single Snapshot</strong> to save a single snapshot of selected streams</li>
+        <li>To stop recording, click the <strong>Stop Recording</strong> button</li>
+        <li>Streams will be recorded while viewing the <strong>Multi-Camera</strong>, <strong>Single Camera</strong>, or <strong>Record Feeds</strong>. Leaving those screens stops recording</li>
+        <li>NOTE: Camera streams can be dynamically added/removed while the recording is taking place</li>
+      </ul>
+    </div>
+
+  <!--End of Message Boxes for the Different Views-->
+
+    <div [ngSwitch]="router.url">
+
+      <!-- The View for multiple Cameras -->
+      <div *ngSwitchCase="'/camera/multicamera'">
+        <div class="ui two column grid">
+          <div class="column" *ngFor="let camera of viewingCameras">
+              <div class="ui segment" (click)="camPicMenu($event, camera)">
+                <div class="ui grid">
+                  <div class="column">
+                    <h3 class="ui header centered">{{camera.name}}</h3>
+                    <img class="ui rounded image centered" [src]="camera.cameraURL" (error)="brokenImg($event)"/>
+                    <div class="ui four item text menu">
+                      <a class="item">
+                        <i class="zoom icon"></i> Expand
+                      </a>
+                      <a class="item">
+                        <i class="edit icon"></i> Edit
+                      </a>
+                      <a class="item">
+                        <i class="refresh icon"></i> Refresh
+                      </a>
+                      <a class="item">
+                        <i class="remove icon"></i> Close
+                      </a>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    <!--The view for a single camera-->
+    <div *ngSwitchCase="'/camera/singlecamera'">
+      <div class="ui one column grid" *ngFor="let oneSingleCamera of currentSingleCamera">
+        <div class="ui column">
+          <div class="ui two column grid">
+            
+            <!--Large Image Panel-->
+            <div class="eleven wide column">
+              <div class="ui segment" (click)="camPicMenu($event, oneSingleCamera)">
+                <div class="ui grid">
+                  <div class="column">
+                    <h3 class="ui header centered">{{oneSingleCamera.name}}</h3>
+                    <img class="ui rounded huge image centered" [src]="oneSingleCamera.cameraURL" (error)="brokenImg($event)">
+                    <div class="ui four item text menu">
+                      <a class="item">
+                        <i class="edit icon"></i> Edit
+                      </a>
+                      <a class="item">
+                        <i class="refresh icon"></i> Refresh
+                      </a>
+                      <a class="item">
+                        <i class="remove icon"></i> Close
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+           
+           <!--Google Map Panel-->
+            <div class="five wide column">
+              <div class="ui segment">
+                <div class="ui grid">
+                  <div class="column"> 
+                    <h3 class="ui header centered">GeoLocation</h3>
+                    <img class="ui rounded image centered" [src]="oneSingleCamera.googleMapURL" (error)="brokenImg($event)">
+                    <div class="ui two item text menu">
+                      <a class="item" (click)="mapZoom('out')">
+                        <i class="small zoom out icon"></i> Zoom Out
+                      </a>
+                      <a class="item" (click)="mapZoom('in')">
+                        <i class="small zoom icon"></i> Zoom In
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!--Location Panel-->
+            <div class="ui segment thirtytopmargin">
+              <h3 class="ui header centered">Physical Address: {{oneSingleCamera.location}}</h3>
+            </div>
+          
+        </div>
+      </div>
+    </div>
+
+    <!--The view for the record camera-->
+    <div *ngSwitchCase="'/camera/record'" >
+      <table class="ui celled striped table" *ngIf="recordingCameras.length !== 0">
+        <thead>
+          <tr> 
+            <th class="ui header" colspan="4">Record These Cameras</th>
+          </tr>
+          <tr>
+            <th class="ui center aligned">Cam #</th>
+            <th class="ui center aligned">Camera Name</th>
+            <th class="ui center aligned">Camera Delay<br/>(5 seconds or higher)</th>
+            <th class="ui center aligned">Record Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let oneRecordingCamera of recordingCameras; let i = index">
+            <td class="ui center aligned">{{i + 1}}</td>
+            <td class="ui center aligned">{{oneRecordingCamera.name}}</td>
+            <td>
+              <div class="ui fluid input">
+                <input type="text" placeholder="Delay" [(ngModel)]="oneRecordingCamera.delay">
+              </div>
+            </td>
+            <td class="ui center aligned">
+              <div class="ui blue specwidth button" *ngIf="oneRecordingCamera.delay < 5" (click)="singleSnapshotRecord(oneRecordingCamera)"> <i class="record icon"></i>Single</div>
+              <div class="ui green specwidth button" *ngIf="oneRecordingCamera.delay > 4" (click)="recordThisCamera(oneRecordingCamera)"><i class="record icon"></i>Record</div>
+              <div class="ui button specwidth disabled" *ngIf="isNaN(oneRecordingCamera.delay)">Invalid Time</div>
+              <div class="ui red specwidth button" *ngIf="isCameraBeingRecorded(oneRecordingCamera)" (click)="stopRecordingCamera(oneRecordingCamera)">Stop Recording</div>
+              <div class="ui specwidth button disabled" *ngIf="!isCameraBeingRecorded(oneRecordingCamera)">Stop Recording</div>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="4"></th>
+          </tr>
+        </tfoot>
+      </table>
+
+    </div>
+
+<!--Start Add/Edit Camera modal-->
+
+<div class="ui modal addcamera" >
+  <div class="header">
+    <span [ngSwitch]="addEditCamera.cameraId !== null">
+      <span *ngSwitchCase="true">Editing <strong>{{addEditCamera.name}}</strong> Cam</span>
+      <span *ngSwitchDefault>Add A New Camera</span>
+    </span>
+  </div>
+
+  <div class="content">
+    <div class="ui form">
+      <div class="fields">
+        <div class="nine wide field">
+          <label>Unique Camera Name</label>
+          <div class="ui left icon input">
+            <i class="camera retro icon"></i>
+            <input type="text" placeholder="Camera Name (Required)" [(ngModel)]="addEditCamera.name" >
+          </div>        
+        </div>
+
+        <div class="three wide field">
+          <label>Camera Type</label>
+          <select class="ui fluid search dropdown" [(ngModel)]="addEditCamera.type">
+            <option [ngValue]="0">Foscam</option>
+            <option [ngValue]="1">IP Cam</option>
+            <option [ngValue]="2">Public</option>
+          </select>
+        </div>     
+      </div>
+
+      <div class="fields">
+        <div class="five wide field">
+          <label>User Name (for Authentication)</label>
+          <div class="ui left icon input">
+            <i class="user icon"></i>
+            <input type="text" placeholder="Leave blank if none..." [(ngModel)]="addEditCamera.loginName">
+          </div>        
+        </div>
+
+        <div class="five wide field">
+          <label>User Password (for Authentication)</label>
+          <div class="ui left icon input">
+            <i class="unlock icon"></i>
+            <input type="text" placeholder="Leave blank if none..." [(ngModel)]="addEditCamera.loginPass">
+          </div>        
+        </div>
+
+        <div class="five wide field">
+          <label>Allow Other Users Access?</label>
+          <select class="ui fluid search dropdown" [(ngModel)]="addEditCamera.private">
+            <option [ngValue]="1">Keep Private</option>
+            <option [ngValue]="0">Make Public</option>
+          </select>
+        </div>  
+      </div>
+
+      <div class="field">
+        <label>Camera Web Address</label>
+        <div class="ui labeled input">
+          <div class="ui label">
+            http://
+          </div>
+          <input type="text" placeholder="Web Url... (https not supported)" [(ngModel)]="addEditCamera.webAddress">
+        </div>     
+      </div>
+
+      <div class="field">
+        <label>Physical Location or Address</label>
+        <div class="ui left icon input">
+          <i class="map signs icon"></i>
+          <input type="text" placeholder="Example: 1111 East 8th Ave, Somewhere, ST 99911" [(ngModel)]="addEditCamera.location">
+        </div>      
+      </div>
+
+    </div>
+  </div>
+    
+  <div class="actions">
+    <div *ngIf="addEditCameraError.hasError"  class="ui negative message">
+      <div class="header">{{addEditCameraError.message}}</div>
+    </div>
+    <div *ngIf="addEditCamera.cameraId !== null" class="ui left floated animated fade red button" (click)="deleteCamera()">
+      <div class="visible content">
+        <i class="trash outline icon"></i>
+        Delete Camera
+      </div>
+      <div class="hidden content">
+        <i class="warning sign icon"></i>
+        Cannot Be Undone
+      </div>
+    </div>
+    <div class="ui black deny button" (click)="abortCameraSubmit()">
+      Forget It
+    </div>
+    <div class="ui positive button" (click)="submitCamera()">
+      <span [ngSwitch]="addEditCamera.cameraId !== null">
+        <span *ngSwitchCase="true">Update Camera</span>
+        <span *ngSwitchDefault>Submit New Camera</span>
+      </span>
+    </div>
+  </div>
+</div>
+<!--End Add/Edit Camera modal-->

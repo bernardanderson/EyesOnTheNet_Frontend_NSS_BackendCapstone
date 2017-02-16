@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 //
 import { HttpRequestService, IHttpRequestConf } from './httprequest.service';
+import { MenuService } from './menu.service';  // Needed for menu communication
 import { GlobalVariables } from './global';
 
 declare var $: any;
@@ -15,15 +16,20 @@ declare var $: any;
 export class LoginComponent {
 
   router: Router;
-  
+  menuActive: boolean = false;
+
   loginError = {
     currentCount:  0,
     maxCount: 3,
     loginErrorMsg: ""
   };
 
-  constructor(router: Router, private httpRequestService: HttpRequestService) { 
+  constructor(private menuService: MenuService, router: Router, private httpRequestService: HttpRequestService) { 
     this.router = router;
+    menuService.showMenu$.subscribe(
+      selectedMenu => {
+        this.menuActive = selectedMenu;
+      });
   }
 
   // Checks for the presence of the JWT key and if so skips the login.
@@ -45,6 +51,7 @@ export class LoginComponent {
 
     this.httpRequestService.postAccess(httpRequestConf).subscribe(
       data => {
+        this.menuService.activateMenu(true);    // Shows the nav-menu on page load
         this.router.navigateByUrl("/camera/multicamera");
       },
       err => {
@@ -56,11 +63,5 @@ export class LoginComponent {
           this.router.navigateByUrl('/register');
         }
     });
-  }
-
-  // This builds a cookie of the JWT parameters, and sets the user name too.
-  private cookieBuilder(sentJWT) {
-    let cookieExpires = new Date((Date.now() + (sentJWT.expires_in - 60) * 1000)).toUTCString();
-    document.cookie = `access_token=${sentJWT.access_token}; expires=${cookieExpires}"`;
   }
 }

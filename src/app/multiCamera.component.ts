@@ -38,7 +38,7 @@ export class CameraDisplayComponent implements OnInit, OnDestroy {
 // Properties    
     router: Router;
 
-    menuSubscription: Subscription;        // Needed for menu communication
+    menuSubscription: Subscription;            // Needed for menu communication
     refreshTimerClock: Subscription;       // For refresh timer subscription
     captureCamFeedClock: Subscription;     // For Cam Picture Capture subscription
 

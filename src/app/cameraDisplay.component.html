@@ -1,38 +1,5 @@
 <div class="ui grid">
-  <div class="three wide column">
-    <div class="ui vertical menu">
-      <div class="item">
-        <div class="ui icon input">
-          <input type="text" placeholder="Search..." #cameraTerm (keyup)="cameraTerm">
-          <i class="search icon"></i>
-        </div>
-      </div>
-
-      <div class="item">
-
-        <div class="ui button fluid" *ngIf="router.url!=='/camera/record'" (click)="refreshTimer()">
-          <i class="wait icon"></i>
-            Refresh All: {{refreshTimerOptions[0].message}}
-        </div>
-
-        <div class="ui button disabled fluid" *ngIf="router.url==='/camera/record'">
-          <i class="wait icon"></i>
-            Refresh Disabled
-        </div>
-
-
-        <h5 class="ui tiny grey center aligned header">
-          Available Cameras
-        </h5>
-      </div>
-
-      <a class="item" *ngFor="let camera of (userCameraList | cameraSearchPipe:cameraTerm.value)" (click)="addCamerasToView(camera)">
-        <h4 class="ui header centered">{{camera.name}}</h4>
-      </a>
-    </div>
-  </div>
-  
-  <div class="twelve wide column">
+  <div class="sixteen wide column">
 
   <!--Start of Message Boxes for the Different Views-->
     <!--When a user has no cameras in the db-->

@@ -8,62 +8,25 @@ declare var $: any;
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers: [MenuService]                    // Needed for menu communication
+  providers: [MenuService]                    // Needed for menu communication, all children inherit this so don't put it in the children
 })
 
 export class AppComponent {
 
   router: Router;
-  menuItem: string = "";
-  menuActive: boolean = false;
+
+  refreshTimerOptions: {                 // Time options for the multi/single camera refreshes (in seconds)
+    message: string,
+    time: number } [] =          
+    [ {message: "Off", time:0},
+      {message: "5s",  time:5000},
+      {message: "10s", time:10000},
+      {message: "15s", time:15000},
+      {message: "30s", time:30000},
+      {message: "60s", time:60000}];
 
   // Sets up the router and menuService to watch clicks to the menu
-  constructor(private menuService: MenuService, router: Router) {
+  constructor(router: Router) {
     this.router = router;
-    menuService.showMenu$.subscribe(
-      selectedMenu => {
-        this.menuActive = selectedMenu;
-      });
-  }
-
-  // When a menu item is clicked, this finds which was cliked and sends out the annoucement to all subscribers
-  userMenuSelection(sentEvent): void {
-    if (sentEvent.target.parentElement.tagName === "I"){
-      this.menuItem = sentEvent.target.parentElement.parentElement.innerText;
-    } else if (sentEvent.target.tagName === "I") {
-      this.menuItem = sentEvent.target.parentElement.innerText;
-    } else {
-      this.menuItem = sentEvent.target.innerText;
-    }
-
-    this.menuService.annouceMenuItem(this.menuItem);
-
-    // When the user clicks the Logout button
-    switch (this.menuItem) {
-      case "Logout": 
-      this.userLogout();
-      break;
-      case "Add Camera":
-      break;
-      case "Multi-Camera":
-      this.router.navigateByUrl("/camera/multicamera");
-      break;
-      case "Single Camera":
-      this.router.navigateByUrl("/camera/singlecamera");
-      break;
-      case "Record Feeds":
-      this.router.navigateByUrl("/camera/record");
-      break;
-      case "Cam DVR":
-      this.router.navigateByUrl("/camdvr");
-      break;
-    }
-  }
-
-  // For the Logout function, deletes Cookie, resets the Ang2 routing
-  userLogout() {
-    document.cookie = "access_token=;Path=/;expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-    this.menuService.activateMenu(false);
-    this.router.navigateByUrl('');
   }
 }

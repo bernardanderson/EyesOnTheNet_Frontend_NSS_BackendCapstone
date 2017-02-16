@@ -9,6 +9,7 @@ import { LoginComponent } from './login.component';
 import { RegisterComponent }  from './register.component';
 import { CameraDisplayComponent }  from './cameraDisplay.component';
 import { DVRComponent } from './DVR.component';
+import { TopMenuComponent } from './topmenu.component';
 import { CameraSearchPipe } from './camerasearch.pipe';
 import { HttpRequestService } from './httprequest.service';           // Houses all the Get/Post Request Methods
 
@@ -20,7 +21,8 @@ import { HttpRequestService } from './httprequest.service';           // Houses 
     RegisterComponent,
     CameraDisplayComponent,
     CameraSearchPipe,
-    DVRComponent
+    DVRComponent,
+    TopMenuComponent
   ],
   imports: [
     BrowserModule,
